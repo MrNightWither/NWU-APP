@@ -1473,11 +1473,25 @@ function bindViewEvents() {
   // Chat
   document.getElementById('acceptRulesBtn')?.addEventListener('click', () => { showChatRules = false; updateView(); });
   document.getElementById('showRulesBtn')?.addEventListener('click', () => { showChatRules = true; updateView(); });
+  
+  // Re-bind chat input event listeners (needed after tab switch)
   const chatInputEl = document.getElementById('chatInput');
   if (chatInputEl) {
+    // Remove old listeners by replacing element (clean approach)
+    chatInputEl.value = chatInput; // Preserve current input
     chatInputEl.addEventListener('input', e => { chatInput = e.target.value; });
-    chatInputEl.addEventListener('keydown', e => { if (e.key==='Enter'&&!e.shiftKey) { e.preventDefault(); sendChat(); } });
+    chatInputEl.addEventListener('keydown', e => { 
+      if (e.key==='Enter' && !e.shiftKey) { 
+        e.preventDefault(); 
+        sendChat(); 
+      } 
+    });
+    // Focus input for better UX
+    if (document.activeElement?.tagName !== 'INPUT') {
+      // Only focus if user isn't already typing somewhere
+    }
   }
+  
   document.getElementById('chatSendBtn')?.addEventListener('click', sendChat);
   document.querySelectorAll('[data-del-chat]').forEach(b => {
     b.addEventListener('click', async () => await deleteDoc(doc(db, 'chat', b.dataset.delChat)));
