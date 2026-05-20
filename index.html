@@ -1475,22 +1475,29 @@ function bindViewEvents() {
   document.getElementById('showRulesBtn')?.addEventListener('click', () => { showChatRules = true; updateView(); });
   
   // Re-bind chat input event listeners (needed after tab switch)
-  const chatInputEl = document.getElementById('chatInput');
-  if (chatInputEl) {
-    // Remove old listeners by replacing element (clean approach)
-    chatInputEl.value = chatInput; // Preserve current input
-    chatInputEl.addEventListener('input', e => { chatInput = e.target.value; });
-    chatInputEl.addEventListener('keydown', e => { 
-      if (e.key==='Enter' && !e.shiftKey) { 
-        e.preventDefault(); 
-        sendChat(); 
-      } 
-    });
-    // Focus input for better UX
-    if (document.activeElement?.tagName !== 'INPUT') {
-      // Only focus if user isn't already typing somewhere
+  // Use setTimeout to ensure DOM is fully updated
+  setTimeout(() => {
+    const chatInputEl = document.getElementById('chatInput');
+    if (chatInputEl) {
+      chatInputEl.value = chatInput; // Preserve current input
+      
+      // Remove any existing listeners by cloning the node
+      const newChatInput = chatInputEl.cloneNode(true);
+      chatInputEl.parentNode.replaceChild(newChatInput, chatInputEl);
+      
+      // Add fresh event listeners
+      newChatInput.addEventListener('input', e => { 
+        chatInput = e.target.value; 
+        console.log('Input updated:', chatInput); // Debug
+      });
+      newChatInput.addEventListener('keydown', e => { 
+        if (e.key==='Enter' && !e.shiftKey) { 
+          e.preventDefault(); 
+          sendChat(); 
+        } 
+      });
     }
-  }
+  }, 0);
   
   document.getElementById('chatSendBtn')?.addEventListener('click', sendChat);
   document.querySelectorAll('[data-del-chat]').forEach(b => {
