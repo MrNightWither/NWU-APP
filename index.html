@@ -91,6 +91,11 @@ let bannedUsers = []; // List of banned user IDs
 let unsubscribers = [];
 let jokeTimeout = null;
 
+// Tab System State
+let activeTab = 'chat'; // 'chat', 'ideas', 'podcast'
+let ideasMessages = [];
+let podcastMessages = [];
+
 // Chat Filter State
 let chatFilterEnabled = true; // Filter is ON by default
 let linkFilterEnabled = true; // Link filter is ON by default
@@ -763,6 +768,17 @@ function renderAbout() {
   const u = currentUser;
   const ce = canEdit(u);
   const m = localMeta || metaData;
+  
+  // Full bio text with sections
+  const bioSections = [
+    { title: 'Wer ich bin', content: m?.bioWhoAmI || 'Mein Name ist Niki, geboren am 26. Juli 2001. Mein Leben war geprägt von vielen Umzügen: Brandenburg, Sachsen-Anhalt, zurück nach Brandenburg.' },
+    { title: 'Die Schulzeit', content: m?.bioSchool || 'Von der dritten bis zur zehnten Klasse wurde ich gemobbt. Ich wurde gewürgt, getreten, geschlagen, beleidigt. Meine Schulsachen wurden zerstört, ich hatte eine Schere im Rücken, mein Schlüsselbein wurde gebrochen. Und noch andere Dinge, die ich hier nicht aufzählen möchte. Diese Erfahrungen haben mich nicht gebrochen. Sie haben mir gezeigt, wie wichtig es ist, dass jemand da ist.' },
+    { title: 'Die Ausbildung & danach', content: m?.bioTraining || 'Drei Tage nach meinem 16. Geburtstag bin ich für meine Ausbildung als Kfz-Mechatroniker ausgezogen. Innerhalb Brandenburgs, aber alleine. Der Grund war simpel: 1,5 Stunden Busfahrt pro Strecke. Das hätte bedeutet, nie pünktlich auf der Arbeit zu sein, und in den Ferien wäre ich gar nicht erst angekommen. Nach der Ausbildung zog ich nach Sachsen-Anhalt, wo ich als Essenslieferant, in der Werft und als Kfz-Mechatroniker arbeitete, bevor ich durch eine Trennung wieder nach Brandenburg zurückkehrte.' },
+    { title: 'Warum ich tue, was ich tue', content: m?.bioWhy || 'Ich selbst habe Depressionen, hatte Panikattacken und war bei einer Psychologin. Kampfsport und Kickboxen haben mir geholfen, meinen Weg zu finden. Aber am meisten geholfen hat mir das Wissen: Ich bin nicht allein.' },
+    { title: 'Die Community', content: m?.bioCommunity || 'Deshalb habe ich diese Community aufgebaut. Hier höre ich zu. Hier bin ich da. Nicht, weil ich damit Geld verdienen will, sondern weil ich weiß, wie es sich anfühlt, allein zu sein.\n\nWir zocken zusammen, machen Challenges und Lese-Streams, probieren neue Dinge aus. Wir reden über Gaming, über deepe Themen, machen Quatsch und unterstützen uns gegenseitig. Jeder ist willkommen, solange er sich benimmt. Das ist kein Business-Projekt. Das ist ein Safe Space für Menschen, die einen brauchen.' },
+    { title: 'Wichtig zu verstehen', content: m?.bioImportant || 'Ich bin kein Therapeut und kann keine professionelle Hilfe ersetzen. Ich bin auch nicht 24/7 verfügbar. Ich bin ein Mensch mit eigenem Leben.\n\nAber: Ich bin hier. Mein Team ist hier. Die Community ist hier. Wir hören zu und bieten einen Raum für Austausch. Jeder ist jedoch selbst verantwortlich für sein Handeln, in der Community und darüber hinaus.\n\nDas ist keine Selbsthilfegruppe. Das ist eine Community, die füreinander da ist.\n\nBei akuten Problemen bitte ich dich dringend, psychologische Hilfe in Anspruch zu nehmen. Es gibt Kummerkästen, Notfallnummern und im Ernstfall den Notruf. Nutze diese Ressourcen, wenn du sie brauchst.\n\nWas ich dir bieten kann: Ein offenes Ohr, eine Community, die versteht, und den Raum, du selbst zu sein. Aber wenn es ernst wird, hol dir professionelle Unterstützung.\n\nUnd noch etwas: Schau nicht weg. Wenn du siehst, dass jemand Hilfe braucht, sei es in der Community oder im echten Leben, dann sei da. Ein kleiner Moment der Aufmerksamkeit kann alles verändern. Und bitte: Auch wenn heutzutage viele Menschen verurteilen, und auch ich nehme mich da nicht aus, auch ich urteile manchmal. Aber wir sollten immer daran denken: Du weißt nie, was jemand durchgemacht hat oder gerade durchmacht.\n\nWeil niemand das durchmachen sollte, was ich durchgemacht habe. Und weil jeder es verdient hat, gehört zu werden.' }
+  ];
+  
   return `
   <div class="max-w-4xl mx-auto space-y-8 pb-20">
     <div class="flex items-center justify-between">
@@ -773,28 +789,97 @@ function renderAbout() {
         ${aboutEditMode ? icons.save+' Speichern' : icons.edit+' Bearbeiten'}
       </button>` : ''}
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="hidden md:flex aspect-square bg-gradient-to-br from-brand-purple/20 to-red-600/20 rounded-[40px] border border-white/10 items-center justify-center">
-        <span class="text-white opacity-50" style="transform:scale(3)">${icons.crown}</span>
+    
+    ${aboutEditMode ? `
+      <!-- Edit Mode -->
+      <div class="bg-brand-card border border-white/5 rounded-[32px] p-8 space-y-6">
+        <p class="text-xs text-white/40 uppercase tracking-widest">Bearbeite jeden Abschnitt separat</p>
+        ${bioSections.map((section, i) => `
+          <div class="space-y-2">
+            <label class="text-sm font-black text-brand-purple uppercase tracking-widest">${section.title}</label>
+            <textarea id="bioSection${i}" rows="${section.content.length > 300 ? 8 : 4}" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-brand-purple/50 leading-relaxed">${section.content}</textarea>
+          </div>
+        `).join('')}
+        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+          <div>
+            <label class="text-xs text-brand-purple uppercase tracking-widest block mb-2">Gegründet</label>
+            <input id="foundedInput" value="${m?.founded||'2025'}" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-brand-purple/50">
+          </div>
+          <div>
+            <label class="text-xs text-red-600 uppercase tracking-widest block mb-2">Region</label>
+            <input id="regionInput" value="${m?.region||'Germany'}" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-brand-purple/50">
+          </div>
+        </div>
       </div>
-      <div class="md:col-span-2 space-y-6">
-        <div class="bg-brand-card border border-white/5 rounded-[32px] p-8 space-y-6">
-          <h3 class="text-4xl font-black text-white uppercase italic">NightWither</h3>
-          ${aboutEditMode ? `<textarea id="bioInput" rows="8" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-brand-purple/50 leading-relaxed">${m?.bio||''}</textarea>` :
-          `<p class="text-lg text-white/70 leading-relaxed font-light">${m?.bio||'Willkommen im Herz der NightWitherUnity...'}</p>`}
-          <div class="grid grid-cols-2 gap-4 pt-4">
-            <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
-              <span class="text-[10px] font-black text-brand-purple uppercase tracking-widest block mb-1 font-mono">Gegründet</span>
-              ${aboutEditMode ? `<input id="foundedInput" value="${m?.founded||'2023'}" class="bg-transparent border-b border-white/10 text-xl font-bold text-white outline-none w-full">` : `<span class="text-xl font-bold text-white">${m?.founded||'2023'}</span>`}
-            </div>
-            <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
-              <span class="text-[10px] font-black text-red-600 uppercase tracking-widest block mb-1 font-mono">Region</span>
-              ${aboutEditMode ? `<input id="regionInput" value="${m?.region||'Nocturnal Sector'}" class="bg-transparent border-b border-white/10 text-xl font-bold text-white outline-none w-full">` : `<span class="text-xl font-bold text-white">${m?.region||'Nocturnal Sector'}</span>`}
+    ` : `
+      <!-- Display Mode -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="hidden md:flex aspect-square bg-gradient-to-br from-brand-purple/20 to-red-600/20 rounded-[40px] border border-white/10 items-center justify-center">
+          <span class="text-white opacity-50" style="transform:scale(3)">${icons.crown}</span>
+        </div>
+        <div class="md:col-span-2 space-y-6">
+          <div class="bg-brand-card border border-white/5 rounded-[32px] p-8 space-y-6">
+            <h3 class="text-4xl font-black text-white uppercase italic">NightWither</h3>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                <span class="text-[10px] font-black text-brand-purple uppercase tracking-widest block mb-1 font-mono">Gegründet</span>
+                <span class="text-xl font-bold text-white">${m?.founded||'2025'}</span>
+              </div>
+              <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                <span class="text-[10px] font-black text-red-600 uppercase tracking-widest block mb-1 font-mono">Region</span>
+                <span class="text-xl font-bold text-white">${m?.region||'Germany'}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+      
+      <!-- Bio Content -->
+      <div class="bg-brand-card border border-white/5 rounded-[32px] p-8 space-y-8">
+        ${bioSections.map(section => `
+          <div class="space-y-3">
+            <h4 class="text-lg font-black text-brand-purple uppercase tracking-tight">${section.title}</h4>
+            <div class="text-white/80 leading-relaxed space-y-3">
+              ${section.content.split('\n\n').map(para => `<p>${para}</p>`).join('')}
+            </div>
+          </div>
+        `).join('<div class="border-t border-white/10"></div>')}
+      </div>
+      
+      <!-- Help Resources -->
+      <div class="bg-red-500/5 border border-red-500/20 rounded-[32px] p-8 space-y-6">
+        <div class="flex items-center gap-3">
+          <div class="p-3 bg-red-500/20 rounded-xl text-red-500 text-2xl">🆘</div>
+          <h4 class="text-xl font-black text-red-500 uppercase tracking-tight">Professionelle Hilfe</h4>
+        </div>
+        <p class="text-white/70 leading-relaxed">Bei akuten Problemen wende dich bitte an:</p>
+        <div class="space-y-4">
+          <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+            <p class="text-xs font-black text-brand-purple uppercase tracking-widest mb-2">📞 Telefonseelsorge (24/7, kostenlos, anonym)</p>
+            <div class="space-y-1">
+              <a href="tel:08001110111" class="block text-white hover:text-brand-purple transition-all font-mono">0800 111 0 111</a>
+              <a href="tel:08001110222" class="block text-white hover:text-brand-purple transition-all font-mono">0800 111 0 222</a>
+              <a href="tel:116123" class="block text-white hover:text-brand-purple transition-all font-mono">116 123</a>
+            </div>
+          </div>
+          <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+            <p class="text-xs font-black text-brand-purple uppercase tracking-widest mb-2">💬 Krisenchat (Online-Beratung, unter 25 Jahre)</p>
+            <a href="https://krisenchat.de" target="_blank" rel="noopener noreferrer" class="text-white hover:text-brand-purple transition-all">www.krisenchat.de ↗</a>
+          </div>
+          <div class="bg-white/5 rounded-xl p-4 border border-white/10">
+            <p class="text-xs font-black text-brand-purple uppercase tracking-widest mb-2">💬 NummerGegenKummer (Kinder & Jugendliche)</p>
+            <a href="tel:116111" class="text-white hover:text-brand-purple transition-all font-mono">116 111</a>
+          </div>
+          <div class="bg-red-600/20 rounded-xl p-4 border border-red-600/30">
+            <p class="text-xs font-black text-red-500 uppercase tracking-widest mb-2">🆘 Im Notfall (akute Gefahr)</p>
+            <div class="flex gap-4">
+              <a href="tel:112" class="text-white hover:text-red-500 transition-all font-mono font-bold">112 (Notruf)</a>
+              <a href="tel:110" class="text-white hover:text-red-500 transition-all font-mono font-bold">110 (Polizei)</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `}
   </div>`;
 }
 
@@ -805,6 +890,18 @@ let showChatRules = true;
 function renderChat() {
   const u = currentUser;
   const canMod = u?.role === 'Owner' || u?.role === 'Moderator';
+  
+  // Get current tab messages
+  const currentMessages = activeTab === 'chat' ? chatMessages : 
+                         activeTab === 'ideas' ? ideasMessages : podcastMessages;
+  
+  // Tab config
+  const tabs = [
+    { id: 'chat', label: 'Live Chat', icon: '💬', collection: 'chat' },
+    { id: 'ideas', label: 'Ideen', icon: '💡', collection: 'ideas' },
+    { id: 'podcast', label: 'Podcast', icon: '🎙️', collection: 'podcast' }
+  ];
+  
   return `
   <div class="max-w-4xl mx-auto h-[72vh] flex flex-col bg-brand-panel border border-white/5 rounded-[32px] overflow-hidden shadow-2xl relative">
     ${showChatRules ? `
@@ -816,6 +913,8 @@ function renderChat() {
       </div>
       <button id="acceptRulesBtn" class="px-8 py-3 bg-brand-purple text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg">Verstanden</button>
     </div>` : ''}
+    
+    <!-- Header -->
     <div class="p-4 md:p-6 border-b border-white/5 flex items-center justify-between bg-black/20">
       <div class="flex items-center gap-3">
         <div class="p-2 bg-brand-purple/20 text-brand-purple rounded-xl">${icons.message}</div>
@@ -824,32 +923,57 @@ function renderChat() {
       </div>
       <button id="showRulesBtn" class="p-2 text-white/20 hover:text-white">${icons.info}</button>
     </div>
+    
+    <!-- Tabs -->
+    <div class="flex border-b border-white/5 bg-black/10 overflow-x-auto scrollbar-hide">
+      ${tabs.map(tab => `
+        <button data-tab="${tab.id}" class="flex-1 min-w-[100px] px-4 py-3 text-xs font-black uppercase transition-all ${
+          activeTab === tab.id 
+            ? 'bg-brand-purple text-white border-b-2 border-brand-purple' 
+            : 'text-white/40 hover:text-white/60 hover:bg-white/5'
+        }">
+          <span class="mr-1">${tab.icon}</span>${tab.label}
+        </button>
+      `).join('')}
+    </div>
+    
+    <!-- Messages -->
     <div id="chatMessages" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 scrollbar-hide">
-      ${chatMessages.length===0?`<div class="h-full flex flex-col items-center justify-center text-white/10 space-y-4 pt-12"><span style="font-size:2rem">😊</span><p class="text-xs uppercase font-black tracking-widest">Starte die Konversation!</p></div>`:''}
-      ${chatMessages.map(msg => `
+      ${currentMessages.length===0?`<div class="h-full flex flex-col items-center justify-center text-white/10 space-y-4 pt-12"><span style="font-size:2rem">${activeTab==='chat'?'😊':activeTab==='ideas'?'💡':'🎙️'}</span><p class="text-xs uppercase font-black tracking-widest">${activeTab==='chat'?'Starte die Konversation!':activeTab==='ideas'?'Teile deine Ideen!':'Stelle deine Fragen!'}</p></div>`:''}
+      ${currentMessages.map(msg => `
       <div class="flex flex-col ${msg.userId===u?.uid?'items-end':'items-start'} group">
         <div class="flex items-center gap-2 mb-1 px-1">
           <span class="text-[9px] font-black uppercase tracking-tighter" style="color:${roleColor(msg.userRole)}">${msg.userName}</span>
           ${msg.userRole==='Moderator'?`<span class="text-blue-400">${icons.shield}</span>`:''}
           ${msg.userRole==='Owner'?`<span style="color:#9333ea">${icons.crown}</span>`:''}
+          ${activeTab !== 'chat' && msg.votes ? `<span class="text-[9px] text-brand-purple ml-2">👍 ${msg.votes}</span>` : ''}
         </div>
         <div class="flex items-end gap-2 max-w-[80%]">
           <div class="px-4 py-2.5 rounded-2xl text-sm shadow-lg ${msg.userId===u?.uid?'bg-brand-purple text-white rounded-br-none':'bg-white/5 text-white/80 rounded-bl-none border border-white/5'}">${msg.text}</div>
-          ${canMod && msg.userId !== u?.uid ? `
-            <div class="opacity-0 group-hover:opacity-100 flex items-center gap-1">
+          <div class="flex items-center gap-1 ${canMod || activeTab !== 'chat' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}">
+            ${activeTab !== 'chat' && msg.userId !== u?.uid ? `
+              <button data-vote="${msg.id}" class="p-1 text-white/40 hover:text-brand-purple transition-all" title="Vote">👍</button>
+            ` : ''}
+            ${canMod && msg.userId !== u?.uid && activeTab === 'chat' ? `
               ${communityUsers.find(cu => cu.uid === msg.userId)?.isBanned ? 
                 `<button data-unban-chat="${msg.userId}" class="p-1 text-green-500 hover:bg-green-500/10 rounded-lg transition-all" title="Unban">🔓</button>` :
                 `<button data-ban-chat="${msg.userId}" class="p-1 text-orange-500 hover:bg-orange-500/10 rounded-lg transition-all" title="Ban">🔨</button>`
               }
-              <button data-del-chat="${msg.id}" class="p-1 text-white/20 hover:text-red-500 transition-all">${icons.trash}</button>
-            </div>
-          ` : (canMod && msg.userId === u?.uid ? `<button data-del-chat="${msg.id}" class="opacity-0 group-hover:opacity-100 p-1 text-white/20 hover:text-red-500 transition-all">${icons.trash}</button>` : '')}
+            ` : ''}
+            ${canMod || msg.userId === u?.uid ? `<button data-del-msg="${msg.id}" class="p-1 text-white/20 hover:text-red-500 transition-all">${icons.trash}</button>` : ''}
+          </div>
         </div>
       </div>`).join('')}
     </div>
+    
+    <!-- Input -->
     <div class="p-4 bg-black/20 border-t border-white/5">
       <div class="flex gap-3">
-        <input id="chatInput" value="${chatInput}" placeholder="Schreibe eine Nachricht..." class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm text-white focus:border-brand-purple/50 outline-none placeholder:text-white/20">
+        <input id="chatInput" value="${chatInput}" placeholder="${
+          activeTab === 'chat' ? 'Schreibe eine Nachricht...' :
+          activeTab === 'ideas' ? 'Teile deine Idee...' :
+          'Stelle deine Frage...'
+        }" class="flex-1 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 text-sm text-white focus:border-brand-purple/50 outline-none placeholder:text-white/20">
         <button id="chatSendBtn" class="p-3 bg-brand-purple text-white rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all">${icons.send}</button>
       </div>
     </div>
@@ -1321,10 +1445,26 @@ function bindViewEvents() {
   document.getElementById('aboutEditBtn')?.addEventListener('click', async () => {
     if (aboutEditMode) {
       localMeta = localMeta || {...metaData};
-      localMeta.bio = document.getElementById('bioInput')?.value || localMeta.bio;
+      // Save all bio sections (bioIntro removed, IDs shifted)
+      localMeta.bioWhoAmI = document.getElementById('bioSection0')?.value || localMeta.bioWhoAmI;
+      localMeta.bioSchool = document.getElementById('bioSection1')?.value || localMeta.bioSchool;
+      localMeta.bioTraining = document.getElementById('bioSection2')?.value || localMeta.bioTraining;
+      localMeta.bioWhy = document.getElementById('bioSection3')?.value || localMeta.bioWhy;
+      localMeta.bioCommunity = document.getElementById('bioSection4')?.value || localMeta.bioCommunity;
+      localMeta.bioImportant = document.getElementById('bioSection5')?.value || localMeta.bioImportant;
       localMeta.founded = document.getElementById('foundedInput')?.value || localMeta.founded;
       localMeta.region = document.getElementById('regionInput')?.value || localMeta.region;
-      await updateDoc(doc(db, 'meta', 'nightwither'), { bio: localMeta.bio, founded: localMeta.founded, region: localMeta.region });
+      
+      await updateDoc(doc(db, 'meta', 'nightwither'), { 
+        bioWhoAmI: localMeta.bioWhoAmI,
+        bioSchool: localMeta.bioSchool,
+        bioTraining: localMeta.bioTraining,
+        bioWhy: localMeta.bioWhy,
+        bioCommunity: localMeta.bioCommunity,
+        bioImportant: localMeta.bioImportant,
+        founded: localMeta.founded, 
+        region: localMeta.region 
+      });
     }
     aboutEditMode = !aboutEditMode;
     updateView();
@@ -1369,6 +1509,50 @@ function bindViewEvents() {
   // Auto scroll chat
   const cm = document.getElementById('chatMessages');
   if (cm) cm.scrollTop = cm.scrollHeight;
+  
+  // Tab Switching
+  document.querySelectorAll('[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTab = btn.dataset.tab;
+      updateView();
+    });
+  });
+  
+  // Voting (Ideas & Podcast)
+  document.querySelectorAll('[data-vote]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const msgId = btn.dataset.vote;
+      const collectionName = activeTab === 'ideas' ? 'ideas' : 'podcast';
+      const currentMessages = activeTab === 'ideas' ? ideasMessages : podcastMessages;
+      const msg = currentMessages.find(m => m.id === msgId);
+      
+      if (!msg) return;
+      
+      const userId = currentUser.uid;
+      const votedBy = msg.votedBy || [];
+      
+      // Check if user already voted
+      if (votedBy.includes(userId)) {
+        alert('Du hast bereits für diese Idee gevotet!');
+        return;
+      }
+      
+      // Add vote
+      await updateDoc(doc(db, collectionName, msgId), {
+        votes: (msg.votes || 0) + 1,
+        votedBy: [...votedBy, userId]
+      });
+    });
+  });
+  
+  // Delete messages (all tabs)
+  document.querySelectorAll('[data-del-msg]').forEach(b => {
+    b.addEventListener('click', async () => {
+      const collectionName = activeTab === 'chat' ? 'chat' : 
+                            activeTab === 'ideas' ? 'ideas' : 'podcast';
+      await deleteDoc(doc(db, collectionName, b.dataset.delMsg));
+    });
+  });
 
   // Community
   document.getElementById('communitySearch')?.addEventListener('input', e => { communitySearch = e.target.value; updateView(); });
@@ -1539,21 +1723,27 @@ async function sendChat() {
     return;
   }
   
-  // Link Detection (for non-Mod/Owner users)
-  const linkRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|([a-zA-Z0-9-]+\.(com|de|net|org|io|tv|gg)[^\s]*)/gi;
-  const hasLink = linkRegex.test(msg);
+  // Determine collection based on active tab
+  const collectionName = activeTab === 'chat' ? 'chat' : 
+                        activeTab === 'ideas' ? 'ideas' : 'podcast';
   
-  // Check if user is allowed to post links
-  const canPostLinks = u.role === 'Owner' || u.role === 'Moderator';
-  
-  if (linkFilterEnabled && hasLink && !canPostLinks) {
-    alert('❌ Bitte keine Eigenwerbung.');
-    return; // Block the message
+  // Link Detection (only for chat tab, for non-Mod/Owner users)
+  if (activeTab === 'chat') {
+    const linkRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|([a-zA-Z0-9-]+\.(com|de|net|org|io|tv|gg)[^\s]*)/gi;
+    const hasLink = linkRegex.test(msg);
+    
+    // Check if user is allowed to post links
+    const canPostLinks = u.role === 'Owner' || u.role === 'Moderator';
+    
+    if (linkFilterEnabled && hasLink && !canPostLinks) {
+      alert('❌ Bitte keine Eigenwerbung.');
+      return; // Block the message
+    }
   }
   
-  // Advanced Word Filter with Regex (detects variations & leet-speak)
+  // Advanced Word Filter with Regex (only for chat tab)
   let filtered = msg;
-  if (chatFilterEnabled) {
+  if (activeTab === 'chat' && chatFilterEnabled) {
     chatFilterWordsList.forEach(word => {
       const pattern = createFilterPattern(word);
       filtered = filtered.replace(pattern, (match) => '*'.repeat(match.length));
@@ -1563,10 +1753,24 @@ async function sendChat() {
   // Send message
   chatInput = '';
   if (document.getElementById('chatInput')) document.getElementById('chatInput').value = '';
-  await addDoc(collection(db, 'chat'), {
-    userId: u.uid, userName: u.displayName, userRole: u.role,
-    text: filtered, timestamp: serverTimestamp(), channel: 'public'
-  });
+  
+  // Add message to appropriate collection
+  const messageData = {
+    userId: u.uid, 
+    userName: u.displayName, 
+    userRole: u.role,
+    text: filtered, 
+    timestamp: serverTimestamp(), 
+    channel: 'public'
+  };
+  
+  // Add votes field for ideas and podcast
+  if (activeTab !== 'chat') {
+    messageData.votes = 0;
+    messageData.votedBy = [];
+  }
+  
+  await addDoc(collection(db, collectionName), messageData);
 }
 
 // ─── Auth actions ──────────────────────────────────────────────
@@ -1641,6 +1845,19 @@ function startListeners() {
       updateView();
     }
   }));
+  
+  // Ideas
+  unsubscribers.push(onSnapshot(query(collection(db,'ideas'),orderBy('timestamp','desc'),limit(50)), snap => {
+    ideasMessages = snap.docs.map(d => ({id:d.id,...d.data()})).sort((a,b) => (b.votes||0) - (a.votes||0));
+    if (activeView==='chat' && activeTab==='ideas') updateView();
+  }));
+  
+  // Podcast
+  unsubscribers.push(onSnapshot(query(collection(db,'podcast'),orderBy('timestamp','desc'),limit(50)), snap => {
+    podcastMessages = snap.docs.map(d => ({id:d.id,...d.data()})).sort((a,b) => (b.votes||0) - (a.votes||0));
+    if (activeView==='chat' && activeTab==='podcast') updateView();
+  }));
+  
   // Community users (only for admins)
   if (currentUser && isAdmin(currentUser)) {
     unsubscribers.push(onSnapshot(query(collection(db,'users'),orderBy('displayName','asc')), snap => {
