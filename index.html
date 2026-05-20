@@ -1474,32 +1474,33 @@ function bindViewEvents() {
   document.getElementById('acceptRulesBtn')?.addEventListener('click', () => { showChatRules = false; updateView(); });
   document.getElementById('showRulesBtn')?.addEventListener('click', () => { showChatRules = true; updateView(); });
   
-  // Re-bind chat input event listeners (needed after tab switch)
-  // Use setTimeout to ensure DOM is fully updated
-  setTimeout(() => {
-    const chatInputEl = document.getElementById('chatInput');
-    if (chatInputEl) {
-      chatInputEl.value = chatInput; // Preserve current input
-      
-      // Remove any existing listeners by cloning the node
-      const newChatInput = chatInputEl.cloneNode(true);
-      chatInputEl.parentNode.replaceChild(newChatInput, chatInputEl);
-      
-      // Add fresh event listeners
-      newChatInput.addEventListener('input', e => { 
-        chatInput = e.target.value; 
-        console.log('Input updated:', chatInput); // Debug
-      });
-      newChatInput.addEventListener('keydown', e => { 
-        if (e.key==='Enter' && !e.shiftKey) { 
-          e.preventDefault(); 
-          sendChat(); 
-        } 
-      });
-    }
-  }, 0);
+  // Chat input - SIMPLE binding
+  const chatInputEl = document.getElementById('chatInput');
+  const chatSendBtn = document.getElementById('chatSendBtn');
   
-  document.getElementById('chatSendBtn')?.addEventListener('click', sendChat);
+  if (chatInputEl) {
+    // Set current value
+    chatInputEl.value = chatInput;
+    
+    // Input handler
+    chatInputEl.oninput = function(e) {
+      chatInput = e.target.value;
+    };
+    
+    // Enter key handler
+    chatInputEl.onkeydown = function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChat();
+      }
+    };
+  }
+  
+  if (chatSendBtn) {
+    chatSendBtn.onclick = sendChat;
+  }
+  
+  // Delete chat messages
   document.querySelectorAll('[data-del-chat]').forEach(b => {
     b.addEventListener('click', async () => await deleteDoc(doc(db, 'chat', b.dataset.delChat)));
   });
