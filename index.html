@@ -161,6 +161,51 @@ function createFilterPattern(word) {
   return new RegExp(pattern, 'gi');
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// XSS PROTECTION - Escapes HTML to prevent code injection
+// ═══════════════════════════════════════════════════════════════════
+function escapeHTML(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RATE LIMITING - Prevents spam (Max 6 messages in 12 seconds)
+// ═══════════════════════════════════════════════════════════════════
+let messageTimestamps = [];
+let recentMessages = []; // Stores recent messages for duplicate detection
+
+function canSendMessage() {
+  const now = Date.now();
+  // Remove timestamps older than 12 seconds
+  messageTimestamps = messageTimestamps.filter(t => now - t < 12000);
+  
+  if (messageTimestamps.length >= 6) {
+    return false; // Rate limit exceeded
+  }
+  
+  messageTimestamps.push(now);
+  return true;
+}
+
+function isDuplicateMessage(text) {
+  const now = Date.now();
+  // Remove messages older than 12 seconds
+  recentMessages = recentMessages.filter(m => now - m.timestamp < 12000);
+  
+  // Check if this exact message was sent in the last 12 seconds
+  const isDuplicate = recentMessages.some(m => m.text === text);
+  
+  if (!isDuplicate) {
+    // Add this message to recent messages
+    recentMessages.push({ text, timestamp: now });
+  }
+  
+  return isDuplicate;
+}
+
 const JOKE_MESSAGES = [
   "CRITICAL: Unity Energy-Level unter 5%!",
   "SYSTEM: NightWither ist zu cool für diesen Browser.",
@@ -676,8 +721,8 @@ function renderEvents() {
           <div class="flex flex-col gap-4">
             <div class="p-3 bg-red-600/20 text-red-600 rounded-xl w-fit">${ev.type==='tournament'?icons.trophy:icons.calendar}</div>
             <div>
-              <h4 class="text-lg font-black text-white uppercase italic">${ev.title}</h4>
-              <p class="text-xs text-white/40 mt-1">${ev.description||''}</p>
+              <h4 class="text-lg font-black text-white uppercase italic">${escapeHTML(ev.title)}</h4>
+              <p class="text-xs text-white/40 mt-1">${escapeHTML(ev.description||'')}</p>
             </div>
             <div class="flex items-end justify-between">
               <div><span class="text-[8px] text-white/20 font-mono block">${ev.eventDate?new Date(ev.eventDate).toLocaleDateString('de-DE'):'Preispool'}</span>
@@ -699,8 +744,8 @@ function renderEvents() {
           <div class="flex items-start gap-4">
             <div class="p-2 rounded-xl ${ann.urgent?'bg-red-600/20 text-red-600':'bg-brand-purple/20 text-brand-purple'}">${ann.urgent?icons.bell:icons.info}</div>
             <div>
-              <h4 class="font-bold text-white uppercase italic">${ann.title} ${ann.url?`<span class="text-white/20 inline-block ml-1">${icons.extlink}</span>`:''}</h4>
-              <p class="text-white/40 text-xs mt-1">${ann.subtitle||''}</p>
+              <h4 class="font-bold text-white uppercase italic">${escapeHTML(ann.title)} ${ann.url?`<span class="text-white/20 inline-block ml-1">${icons.extlink}</span>`:''}</h4>
+              <p class="text-white/40 text-xs mt-1">${escapeHTML(ann.subtitle||'')}</p>
             </div>
           </div>
           ${ce ? `<button data-del-ann="${ann.id}" class="p-2 text-white/20 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all ml-4 shrink-0" onclick="event.stopPropagation()">${icons.trash}</button>` : ''}
@@ -943,13 +988,13 @@ function renderChat() {
       ${currentMessages.map(msg => `
       <div class="flex flex-col ${msg.userId===u?.uid?'items-end':'items-start'} group">
         <div class="flex items-center gap-2 mb-1 px-1">
-          <span class="text-[9px] font-black uppercase tracking-tighter" style="color:${roleColor(msg.userRole)}">${msg.userName}</span>
+          <span class="text-[9px] font-black uppercase tracking-tighter" style="color:${roleColor(msg.userRole)}">${escapeHTML(msg.userName)}</span>
           ${msg.userRole==='Moderator'?`<span class="text-blue-400">${icons.shield}</span>`:''}
           ${msg.userRole==='Owner'?`<span style="color:#9333ea">${icons.crown}</span>`:''}
           ${activeTab !== 'chat' && msg.votes ? `<span class="text-[9px] text-brand-purple ml-2">👍 ${msg.votes}</span>` : ''}
         </div>
         <div class="flex items-end gap-2 max-w-[80%]">
-          <div class="px-4 py-2.5 rounded-2xl text-sm shadow-lg ${msg.userId===u?.uid?'bg-brand-purple text-white rounded-br-none':'bg-white/5 text-white/80 rounded-bl-none border border-white/5'}">${msg.text}</div>
+          <div class="px-4 py-2.5 rounded-2xl text-sm shadow-lg ${msg.userId===u?.uid?'bg-brand-purple text-white rounded-br-none':'bg-white/5 text-white/80 rounded-bl-none border border-white/5'}">${escapeHTML(msg.text)}</div>
           <div class="flex items-center gap-1 ${canMod || activeTab !== 'chat' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}">
             ${activeTab !== 'chat' && msg.userId !== u?.uid ? `
               <button data-vote="${msg.id}" class="p-1 text-white/40 hover:text-brand-purple transition-all" title="Vote">👍</button>
@@ -1007,15 +1052,15 @@ function renderCommunity() {
       <div class="bg-brand-panel border border-white/5 p-4 md:p-6 rounded-[32px] hover:bg-white/[0.02] transition-all">
         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
           <div class="relative shrink-0">
-            <img src="${cu.photoURL||'logo.png'}" class="w-16 h-16 rounded-2xl object-cover border border-white/10" alt="${cu.displayName}">
+            <img src="${cu.photoURL||'logo.png'}" class="w-16 h-16 rounded-2xl object-cover border border-white/10" alt="${escapeHTML(cu.displayName||'User')}">
             <div class="absolute -bottom-1 -right-1 p-1.5 bg-brand-bg border border-white/10 rounded-lg">${roleMiniIcon(cu.role)}</div>
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2">
-              <h4 class="text-white font-bold truncate">${cu.displayName||'—'}</h4>
+              <h4 class="text-white font-bold truncate">${escapeHTML(cu.displayName||'—')}</h4>
               ${cu.isBanned ? `<span class="px-2 py-0.5 bg-red-500/20 text-red-500 text-[8px] font-black uppercase rounded-md border border-red-500/30">🚫 GEBANNT</span>` : ''}
             </div>
-            <p class="text-xs text-white/30 truncate">${cu.email||'Keine E-Mail'}</p>
+            <p class="text-xs text-white/30 truncate">${escapeHTML(cu.email||'Keine E-Mail')}</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <div class="flex items-center gap-1 bg-black/20 p-1.5 rounded-xl border border-white/5">
@@ -1743,6 +1788,20 @@ async function sendChat() {
   if (u.isBanned) {
     alert('🚫 Du wurdest gebannt und kannst keine Nachrichten mehr senden.');
     return;
+  }
+  
+  // Rate Limiting: Max 6 messages in 12 seconds (not for Owner/Mod)
+  if (u.role !== 'Owner' && u.role !== 'Moderator') {
+    if (!canSendMessage()) {
+      alert('⏱️ Slow down! Max 6 Nachrichten in 12 Sekunden.');
+      return;
+    }
+    
+    // Duplicate Detection: Same message in 12 seconds
+    if (isDuplicateMessage(msg)) {
+      alert('💜 Einmal reicht zum Lesen');
+      return;
+    }
   }
   
   // Determine collection based on active tab
