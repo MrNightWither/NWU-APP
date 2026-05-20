@@ -102,30 +102,52 @@ let linkFilterEnabled = true; // Link filter is ON by default
 
 // ═══════════════════════════════════════════════════════════════════
 // COMPREHENSIVE BLACKLIST - ALPHABETICALLY ORGANIZED (A-Z)
+// GERMAN + ENGLISH WORDS
 // ═══════════════════════════════════════════════════════════════════
 const chatFilterWords = {
-  'A': ['aasgeier', 'abschaum', 'alter', 'arsch', 'arschficker', 'arschgeige', 'arschgesicht', 'arschkarte', 'arschkrampe', 'arschlecker', 'arschloch', 'autist'],
-  'B': ['bastard', 'behinderter', 'beta', 'bitch', 'blödmann', 'boomer'],
-  'C': ['chad', 'clown', 'cringe', 'cuck'],
-  'D': ['depp', 'digga', 'downie', 'dreck', 'drecksack', 'drecksau', 'drecksfotze', 'drecksratte', 'drecksschwein', 'drecksvieh', 'dummbatz', 'dummkopf', 'dussel', 'dödel', 'dösbaddel'],
+  // GERMAN WORDS
+  'A': ['aasgeier', 'abschaum', 'arsch', 'arschficker', 'arschgeige', 'arschgesicht', 'arschkarte', 'arschkrampe', 'arschlecker', 'arschloch', 'autist'],
+  'B': ['bastard', 'behinderter', 'beta', 'bitch', 'blödmann'],
+  'C': ['cuck'],
+  'D': ['depp', 'downie', 'dreck', 'drecksack', 'drecksau', 'drecksfotze', 'drecksratte', 'drecksschwein', 'drecksvieh', 'dummbatz', 'dummkopf', 'dussel', 'dödel', 'dösbaddel'],
   'E': ['ekelpakete', 'esel'],
-  'F': ['fick', 'ficken', 'fickfresse', 'fickschnitzel', 'flasche', 'flittchen', 'fotze', 'fotzenknecht', 'freak'],
+  'F': ['fick', 'ficken', 'fickfresse', 'fickschnitzel', 'flasche', 'flittchen', 'fotze', 'fotzenknecht'],
   'G': ['gesindel', 'giftnatter', 'giftzwerg'],
   'H': ['hohlkopf', 'honk', 'hornochse', 'hs', 'hure', 'hurensohn', 'hyäne'],
   'I': ['idiot', 'incel'],
-  'J': ['joker', 'jude', 'judensau', 'junge'],
-  'K': ['kackbratze', 'kacke', 'kanaille', 'kanake', 'karen', 'kartoffel', 'kek', 'kellerassel', 'kevin', 'kotzbrocken', 'kröte', 'krüppel', 'kümmeltürke'],
+  'J': ['jude', 'judensau'],
+  'K': ['kackbratze', 'kacke', 'kanaille', 'kanake', 'kartoffel', 'kek', 'kellerassel', 'kevin', 'kotzbrocken', 'kröte', 'krüppel', 'kümmeltürke'],
   'L': ['lappen', 'lauch', 'lesbe', 'lump', 'lusche'],
   'M': ['made', 'missgeburt', 'mistkerl', 'mistsau', 'miststück', 'mistvieh', 'mongo', 'mongole', 'motherfucker', 'muschi', 'möse'],
   'N': ['narr', 'neger', 'niete', 'nigger', 'nulpe', 'nutte'],
   'O': ['ochse', 'opfer', 'otto'],
   'P': ['penner', 'pfeife', 'pisser'],
   'R': ['ratte', 'retard'],
-  'S': ['sackgesicht', 'sau', 'saubande', 'scheiss', 'scheißdreck', 'scheiße', 'scheißer', 'scheißkerl', 'schlampe', 'schlange', 'schlitzauge', 'schuft', 'schwachkopf', 'schwanzgesicht', 'schwanzlutscher', 'schwein', 'schweinebacke', 'schweinehund', 'schwuchtel', 'schwuler', 'simp', 'son', 'soyboy', 'spacken', 'spacko', 'spast', 'spasti', 'spastiker', 'speckfotze', 'spermarutsche', 'spinner', 'stinktier'],
+  'S': ['sackgesicht', 'sau', 'saubande', 'scheiss', 'scheißdreck', 'scheiße', 'scheißer', 'scheißkerl', 'schlampe', 'schlange', 'schlitzauge', 'schuft', 'schwachkopf', 'schwanzgesicht', 'schwanzlutscher', 'schwein', 'schweinebacke', 'schweinehund', 'schwuchtel', 'schwuler', 'spacken', 'spacko', 'spast', 'spasti', 'spastiker', 'speckfotze', 'spermarutsche', 'spinner', 'stinktier'],
   'T': ['transe', 'trottel', 'tucke', 'tussi', 'tölpel'],
   'V': ['verdammt', 'verfickt', 'viper', 'vollhonk', 'vollidiot', 'votze'],
   'W': ['warzenschwein', 'wichser', 'wichsvorlage', 'widerling', 'wurm'],
-  'Z': ['zigeuner']
+  'Z': ['zigeuner'],
+  
+  // ENGLISH WORDS
+  'EN_A': ['ass', 'asshole', 'arse', 'arsehole', 'anal'],
+  'EN_B': ['bastard', 'bitch', 'bitches', 'bullshit', 'bloody'],
+  'EN_C': ['cunt', 'cock', 'cum', 'crap', 'chink'],
+  'EN_D': ['dick', 'dickhead', 'damn', 'douche', 'douchebag', 'dyke'],
+  'EN_F': ['fuck', 'fucker', 'fucking', 'fag', 'faggot', 'fck', 'fuk'],
+  'EN_G': ['gay', 'goddamn'],
+  'EN_H': ['hell', 'hoe', 'homo', 'hooker'],
+  'EN_J': ['jerk', 'jackass'],
+  'EN_K': ['kike', 'kys'],
+  'EN_L': ['loser'],
+  'EN_M': ['motherfucker', 'moron'],
+  'EN_N': ['nigga', 'nigger', 'nazi'],
+  'EN_P': ['piss', 'pussy', 'prick', 'porn', 'pedo'],
+  'EN_R': ['retard', 'retarded', 'rape'],
+  'EN_S': ['shit', 'shitty', 'slut', 'slutty', 'sucker', 'suck', 'scum', 'sex', 'stupid'],
+  'EN_T': ['twat', 'trash', 'turd'],
+  'EN_W': ['whore', 'wanker'],
+  'EN_OTHER': ['kys', 'stfu', 'gtfo']
 };
 
 // Flatten for easy iteration
