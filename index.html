@@ -284,6 +284,7 @@ const icons = {
   youtube: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor"/></svg>`,
   instagram: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`,
   music: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+  helpCircle: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
 };
 
 // ─── Helpers ───────────────────────────────────────────────────
@@ -472,6 +473,7 @@ function renderMain() {
       </div>
       <div class="flex flex-col gap-4 mt-auto">
         ${!gst ? navItem('profile','user','Profil') : ''}
+        ${!gst ? navItem('faq','helpCircle','FAQ') : ''}
         <button id="logoutBtn" class="w-12 h-12 rounded-xl flex items-center justify-center text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all">${icons.logout}</button>
         ${navItem('settings','settings','Einstellungen')}
       </div>
@@ -484,7 +486,8 @@ function renderMain() {
       <button data-nav="chat" class="p-3 rounded-lg nav-mob ${activeView==='chat'?'text-brand-purple':'text-white/40'}">${icons.message}</button>
       ${!gst ? `<button data-nav="events" class="p-3 rounded-lg nav-mob ${activeView==='events'?'text-brand-purple':'text-white/40'}">${icons.trophy}</button>
       <button data-nav="about" class="p-3 rounded-lg nav-mob ${activeView==='about'?'text-brand-purple':'text-white/40'}">${icons.usercircle}</button>
-      <button data-nav="profile" class="p-3 rounded-lg nav-mob ${activeView==='profile'?'text-brand-purple':'text-white/40'}">${icons.user}</button>` : ''}
+      <button data-nav="profile" class="p-3 rounded-lg nav-mob ${activeView==='profile'?'text-brand-purple':'text-white/40'}">${icons.user}</button>
+      <button data-nav="faq" class="p-3 rounded-lg nav-mob ${activeView==='faq'?'text-brand-purple':'text-white/40'}">${icons.helpCircle}</button>` : ''}
       ${adm ? `<button data-nav="community" class="p-3 rounded-lg nav-mob ${activeView==='community'?'text-brand-purple':'text-white/40'}">${icons.usercog}</button>` : ''}
     </nav>
 
@@ -558,6 +561,7 @@ function renderView() {
     case 'chat': return renderChat();
     case 'community': return renderCommunity();
     case 'profile': return renderProfile();
+    case 'faq': return renderFAQ();
     case 'settings': return renderSettings();
     default: return renderHome();
   }
@@ -1196,6 +1200,298 @@ function renderProfile() {
       <h3 class="text-sm font-black text-white/20 uppercase tracking-widest mb-6">Follower Zahlen <span class="text-brand-purple">(Öffentlich)</span></h3>
       ${followerFields.map(f => fieldRow(f.key, f.label, '0')).join('')}
     </div>` : ''}
+  </div>`;
+}
+// ─── FAQ ──────────────────────────────────────────────────────────
+function renderFAQ() {
+  const u = currentUser;
+  const isOwner = u.role === 'Owner';
+  const faq = metaData?.faq || {};
+  
+  // Helper to render a collapsible FAQ item
+  function faqItem(question, answerKey, defaultAnswer = 'Noch nicht beantwortet') {
+    const answer = faq[answerKey] || defaultAnswer;
+    return `
+      <details class="group">
+        <summary class="flex items-center justify-between cursor-pointer p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all list-none">
+          <span class="text-sm font-bold text-white/80">${question}</span>
+          <span class="text-brand-purple transform group-open:rotate-90 transition-transform">${icons.chevron}</span>
+        </summary>
+        <div class="mt-2 p-4 bg-black/20 rounded-xl text-sm text-white/60 whitespace-pre-wrap">${escapeHTML(answer)}</div>
+      </details>
+    `;
+  }
+
+  // Category renderer
+  function renderCategory(title, icon, items) {
+    return `
+    <div class="bg-brand-card border border-white/5 rounded-[32px] p-6 md:p-8">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-2 bg-brand-purple/20 text-brand-purple rounded-xl">${icon}</div>
+        <h2 class="text-xl font-black text-white uppercase tracking-tight">${title}</h2>
+      </div>
+      <div class="space-y-4">
+        ${items}
+      </div>
+    </div>`;
+  }
+
+  return `
+  <div class="space-y-8 max-w-5xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tight mb-2">FAQ</h1>
+        <p class="text-white/40 text-sm">Häufig gestellte Fragen</p>
+      </div>
+      ${isOwner ? `<button id="editFAQBtn" class="px-4 py-2 bg-brand-purple hover:bg-brand-purple/80 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2">
+        ${icons.edit} BEARBEITEN
+      </button>` : ''}
+    </div>
+
+    <!-- STREAMING CATEGORIES -->
+    ${renderCategory('📺 Streaming - Basics', icons.twitch, `
+      ${faqItem('Wie viele Stunden streamst du pro Woche?', 'streaming_hours', 'Unterschiedlich, Di & Do ca. 3½-4h, Sa bis ich keine Lust mehr habe')}
+      ${faqItem('Streamst du Fulltime oder als Hobby?', 'streaming_type', 'Hobby')}
+      ${faqItem('Seit wann streamst du?', 'streaming_since', 'Seit September 2025')}
+      ${faqItem('Wie bist du zu Twitch gekommen?', 'streaming_how', 'Hab damals als Kind Gronkh und HandOfBlood geschaut')}
+    `)}
+
+    ${renderCategory('📺 Streaming - Software & Setup', icons.settings, `
+      ${faqItem('Welche Streaming-Software nutzt du?', 'streaming_software', 'OBS und TikTok Studio')}
+      ${faqItem('Welche Bitrate/Settings nutzt du?', 'streaming_bitrate', '6000')}
+      ${faqItem('Welche Overlays nutzt du?', 'streaming_overlays', 'Meine (eigene)')}
+      ${faqItem('Welche Alerts/Sounds?', 'streaming_alerts', 'Unterschiedlich, will aber auf eigene umstellen')}
+      ${faqItem('Nutzt du Bots?', 'streaming_bots', 'Streamer.bot & eigenen NWU.bot')}
+      ${faqItem('Welche Twitch Extensions?', 'streaming_extensions', 'Ja')}
+      ${faqItem('Delay auf deinem Stream?', 'streaming_delay', 'Nein')}
+    `)}
+
+    ${renderCategory('📺 Streaming - Content', icons.camera, `
+      ${faqItem('Planst du auch YouTube/TikTok Live?', 'streaming_platforms', 'TikTok dienstags und IRL, YouTube eventuell irgendwann')}
+      ${faqItem('Streamst du spontan oder geplant?', 'streaming_planning', 'Sowohl als auch')}
+      ${faqItem('Streamst du auf mehreren Plattformen gleichzeitig?', 'streaming_multistream', 'Aktuell nicht')}
+      ${faqItem('Wie gehst du mit Stream-Snipern um?', 'streaming_snipers', 'Keine Erfahrung')}
+    `)}
+
+    ${renderCategory('📺 Streaming - Routine', icons.calendar, `
+      ${faqItem('Was machst du VOR dem Stream?', 'streaming_before', 'Energy mixen, eine rauchen')}
+      ${faqItem('Was machst du NACH dem Stream?', 'streaming_after', 'Eine rauchen und Clips anschauen')}
+      ${faqItem('Isst/trinkst du während dem Stream?', 'streaming_eatdrink', 'Ja und ja')}
+      ${faqItem('Wie viele Pausen machst du?', 'streaming_breaks', 'Unterschiedlich, passiert spontan')}
+      ${faqItem('Streamst du auch wenn krank?', 'streaming_sick', 'Kommt drauf an, meist aber nein')}
+    `)}
+
+    ${renderCategory('📺 Streaming - Stats', icons.activity, `
+      ${faqItem('Längster Stream?', 'streaming_longest', '14 Stunden')}
+    `)}
+
+    <!-- GAMING CATEGORIES -->
+    ${renderCategory('🎮 Gaming - Main Games', icons.trophy, `
+      ${faqItem('Was sind deine Main Games aktuell?', 'gaming_main', 'CoD Warzone und Arc Raiders')}
+      ${faqItem('Lieblings-Game (All-Time)?', 'gaming_favorite', 'Puh, Minecraft würde ich spontan sagen')}
+      ${faqItem('Welche Games zockst du aktuell?', 'gaming_current', 'CoD Warzone, DMZ, Arc Raiders, Resident Evil, Minecraft & Diablo')}
+      ${faqItem('Lieblings-Genre?', 'gaming_genre', 'Aktuell Action bzw. Extraction Shooter')}
+      ${faqItem('Spiele die du hasst?', 'gaming_hate', 'Hassen keine, nicht mögen würde ich sagen FIFA')}
+    `)}
+
+    ${renderCategory('🎮 Gaming - Playstyle', icons.star, `
+      ${faqItem('Ranked oder Casual?', 'gaming_ranked', 'Casual')}
+      ${faqItem('Solo oder mit Community?', 'gaming_solo', 'Beides')}
+      ${faqItem('PvP oder PvE?', 'gaming_pvp', 'Kommt auf das Spiel an')}
+      ${faqItem('Spielst du auch Off-Stream?', 'gaming_offstream', 'Ja')}
+    `)}
+
+    ${renderCategory('🎮 Gaming - Platform & Settings', icons.settings, `
+      ${faqItem('Konsole oder PC?', 'gaming_platform', 'PC ist Main, Konsole für bestimmte Games oder Challenges')}
+      ${faqItem('Controller oder Keyboard/Mouse?', 'gaming_input', 'Main M&K, Controller für Challenges')}
+      ${faqItem('Welche Sensitivity spielst du?', 'gaming_sens', '23.000 DPI')}
+      ${faqItem('FOV Settings?', 'gaming_fov', 'Max FOV')}
+    `)}
+
+    ${renderCategory('🎮 Gaming - Hypothetisch', icons.helpCircle, `
+      ${faqItem('Wenn du NUR noch EIN Game spielen dürftest?', 'gaming_onegame', "Assassin's Creed")}
+      ${faqItem('Wenn du zurück in der Zeit reisen könntest - welches Game-Release?', 'gaming_timetravel', 'Diablo')}
+    `)}
+
+    <!-- SETUP CATEGORIES -->
+    ${renderCategory('⚙️ Setup & Gear - Peripherie', icons.settings, `
+      ${faqItem('Welche Tastatur?', 'setup_keyboard', 'Razer Huntsman Mini')}
+      ${faqItem('Welche Maus?', 'setup_mouse', 'Razer Basilisk V3 Pro 35K')}
+      ${faqItem('Welches Headset/Mikro?', 'setup_audio', 'Headset: Razer BlackShark V2 Pro / Mikro: Razer Seiren Elite')}
+      ${faqItem('Welcher Monitor?', 'setup_monitor', 'AOC 25G4SRE 24,5 Zoll, 310Hz')}
+      ${faqItem('Welchen Gaming-Stuhl?', 'setup_chair', 'No-Name')}
+      ${faqItem('Controller?', 'setup_controller', 'PS5 Controller')}
+    `)}
+
+    ${renderCategory('⚙️ Setup & Gear - Mobile/IRL', icons.camera, `
+      ${faqItem('Welches Handy?', 'setup_phone', 'Samsung S24 Ultra')}
+      ${faqItem('Welche Kamera?', 'setup_camera', '- (keine separate Kamera)')}
+      ${faqItem('Welches Mikro für unterwegs?', 'setup_mobilemic', 'DJI Osmo Mobile 7P Intelligenter Smartphone-Gimbal mit DJI Mic Mini 2')}
+    `)}
+
+    ${renderCategory('⚙️ Setup & Gear - Sonstiges', icons.settings, `
+      ${faqItem('Internet-Speed?', 'setup_internet', '700-900 Mbit/s Download, 60 Mbit/s Upload')}
+      ${faqItem('Welches Licht/Beleuchtung?', 'setup_lighting', 'Razer RGB')}
+      ${faqItem('Greenscreen?', 'setup_greenscreen', 'Nein')}
+    `)}
+
+    <!-- PERSONAL CATEGORIES -->
+    ${renderCategory('🎭 Persönliches - Identity', icons.user, `
+      ${faqItem('Warum trägst du eine Maske?', 'personal_mask_why', 'Privatsphäre')}
+      ${faqItem('Wie oft wechselst du die Maske?', 'personal_mask_change', 'Waschen 1 mal die Woche')}
+      ${faqItem('Verschiedene Masken oder immer die gleiche?', 'personal_mask_type', '3 Masken')}
+      ${faqItem('Wird die Maske im Sommer nicht heiß?', 'personal_mask_hot', 'Multifunktionstuch: Nein / Bandana: Nicht immer')}
+    `)}
+
+    ${renderCategory('🎭 Persönliches - Basics', icons.user, `
+      ${faqItem('Wie alt bist du?', 'personal_age', '26.07.2001 Geboren')}
+      ${faqItem('Wie groß bist du?', 'personal_height', '188 cm')}
+      ${faqItem('Linksträger oder Rechtsträger?', 'personal_hand', 'Rechtshänder')}
+      ${faqItem('Welche Sprachen sprichst du?', 'personal_languages', 'Deutsch')}
+    `)}
+
+    ${renderCategory('🎭 Persönliches - Favorites', icons.star, `
+      ${faqItem('Lieblings-Energy Drink?', 'personal_energy', 'Standard Monster & Lvl Up')}
+      ${faqItem('Lieblings-Essen?', 'personal_food', 'Sushi & Birnen und Klöße')}
+      ${faqItem('Lieblings-Farbe?', 'personal_color', 'Nichtfarbe Schwarz & Pink [#D500F9]')}
+      ${faqItem('Lieblings-Film/Serie?', 'personal_series', 'Breaking Bad')}
+      ${faqItem('Lieblings-Musik/Genre?', 'personal_music', 'Alles außer Schlager, Lieblings-Künstler: Aytee')}
+    `)}
+
+    ${renderCategory('🎭 Persönliches - Lifestyle', icons.user, `
+      ${faqItem('Haustiere?', 'personal_pets', 'Ja')}
+      ${faqItem('Tattoos/Piercings?', 'personal_tattoos', 'Ja, beides')}
+      ${faqItem('Kaffee oder Energy?', 'personal_drink', 'Energy')}
+    `)}
+
+    <!-- COMMUNITY CATEGORIES -->
+    ${renderCategory('👥 Community - Interaction', icons.usercog, `
+      ${faqItem('Spielst du mit Zuschauern?', 'community_playwith', 'Ja, außer es wird was anderes gesagt')}
+      ${faqItem('Wie werde ich Mod?', 'community_mod', 'Nicht durch fragen')}
+      ${faqItem('Wie kann ich dich unterstützen?', 'community_support', 'Anwesenheit, Aktiv sein')}
+      ${faqItem('Gibt es Merch?', 'community_merch', 'Planung ja, vorhanden nein')}
+      ${faqItem('Wie alt muss man sein um beizutreten?', 'community_age', 'Unterschiedlich')}
+      ${faqItem('Gibt es Subscriber-Only Events?', 'community_subevents', 'Irgendwann vielleicht')}
+      ${faqItem('Gibt es VIP/Sub Vorteile?', 'community_subperks', 'Irgendwann vielleicht')}
+      ${faqItem('Kann ich als Gast mitmachen?', 'community_guest', 'Muss gefragt werden')}
+    `)}
+
+    ${renderCategory('👥 Community - Engagement', icons.trophy, `
+      ${faqItem('Machst du Community-Challenges?', 'community_challenges', 'Ja')}
+      ${faqItem('Nimmst du Spiel-Vorschläge an?', 'community_suggestions', 'Ja')}
+      ${faqItem('Machst du Subscriber-Games?', 'community_subgames', 'Aktuell nicht')}
+      ${faqItem('Würdest du gegen Community antreten?', 'community_compete', 'Aktuell nicht')}
+    `)}
+
+    ${renderCategory('👥 Community - Highlights', icons.award, `
+      ${faqItem('Größtes Community-Highlight bisher?', 'community_highlight', 'Puh')}
+      ${faqItem('Erinnerst du dich an deinen ersten Viewer?', 'community_firstviewer', 'Ja [Blast]')}
+      ${faqItem('Erinnerst du dich an deinen ersten Sub?', 'community_firstsub', 'Aktuell nicht vorhanden')}
+    `)}
+
+    <!-- MONEY/SUPPORT -->
+    ${renderCategory('💰 Geld/Support', icons.award, `
+      ${faqItem('Kann man vom Streaming leben?', 'money_live', 'Bestimmt, ich nicht')}
+      ${faqItem('Streamst du Fulltime oder Hobby?', 'money_fulltime', 'Hobby')}
+      ${faqItem('Wie kann ich dich unterstützen?', 'money_support', 'Aktiv sein')}
+      ${faqItem('Gibt es Affiliate Links?', 'money_affiliate', 'Nein')}
+      ${faqItem('Gibt es Merch?', 'money_merch', 'In Planung, vorhanden nein')}
+      ${faqItem('Twitch Partner oder Affiliate?', 'money_partner', 'Nein, will noch nicht')}
+      ${faqItem('Verrückteste Donation-Message?', 'money_donation_crazy', '-')}
+      ${faqItem('Lustigste Donation-Message?', 'money_donation_funny', '-')}
+    `)}
+
+    <!-- BRANDING -->
+    ${renderCategory('🎨 Branding', icons.star, `
+      ${faqItem('Bedeutung hinter "NightWither"?', 'branding_name', 'Später')}
+      ${faqItem('Warum Lila/Purple als Farbe?', 'branding_color', 'Mag die Farbe [#D500F9]')}
+      ${faqItem('Wer hat dein Logo gemacht?', 'branding_logo', 'Ich')}
+      ${faqItem('Wer hat Overlays/Emotes designed?', 'branding_overlays', 'Ich')}
+      ${faqItem('Warum "Unity" als Community-Name?', 'branding_unity', 'Einheit und Zusammenhalt')}
+    `)}
+
+    <!-- FUTURE -->
+    ${renderCategory('🔮 Zukunft', icons.calendar, `
+      ${faqItem('Streaming-Ziele?', 'future_goals', 'Viele erreichen')}
+      ${faqItem('Events geplant?', 'future_events', 'Ja')}
+      ${faqItem('Collabs geplant?', 'future_collabs', 'Möglich ;)')}
+      ${faqItem('IRL-Streams geplant?', 'future_irl', 'Ja')}
+      ${faqItem('Würdest du dein Gesicht zeigen?', 'future_face', 'Nein')}
+      ${faqItem('Planst du andere Plattformen?', 'future_platforms', 'Spotify')}
+      ${faqItem('Wenn du mit JEDEM Streamer collab könntest - wer?', 'future_dream_collab', 'HandOfBlood')}
+    `)}
+
+    <!-- STREAM MOMENTS -->
+    ${renderCategory('😂 Stream-Momente', icons.trophy, `
+      ${faqItem('Größtes Stream-Highlight bisher?', 'moments_highlight', '-')}
+      ${faqItem('Peinlichster Stream-Moment?', 'moments_embarrassing', 'Peinlich? Kann man das essen?')}
+      ${faqItem('Lustigster Community-Moment?', 'moments_funny', '1 Sek. Face Reveal')}
+      ${faqItem('Wie gehst du mit Hate um?', 'moments_hate', 'Entspannt')}
+    `)}
+
+    <!-- INTERACTION -->
+    ${renderCategory('💬 Interaktion', icons.message, `
+      ${faqItem('Liest du alle Chat-Nachrichten?', 'interaction_readall', 'Ja')}
+      ${faqItem('Antwortest du auf DMs?', 'interaction_dms', 'Ja')}
+      ${faqItem('Wie schnell antwortest du?', 'interaction_speed', 'Kommt drauf an')}
+      ${faqItem('Bevorzugte Kontaktmethode?', 'interaction_method', 'Egal')}
+      ${faqItem('Wie kann ich dich kontaktieren?', 'interaction_how', 'Alles verlinkt')}
+    `)}
+
+    <!-- SOCIAL MEDIA -->
+    ${renderCategory('📱 Social Media', icons.share2, `
+      ${faqItem('Postest du auf Instagram/X/Twitter?', 'social_platforms', 'Insta ja, Twitter hab ich nicht')}
+      ${faqItem('Welche Platform nutzt du am meisten?', 'social_most', 'TikTok für Content')}
+      ${faqItem('Antwortest du auf DMs?', 'social_dms', 'Ja')}
+      ${faqItem('Wie oft postest du auf TikTok?', 'social_tiktok', 'Normal täglich, aktuell 3 Tage pro Woche')}
+    `)}
+
+    <!-- AUDIO/MUSIC -->
+    ${renderCategory('🎤 Audio/Musik', icons.music, `
+      ${faqItem('Hörst du Musik während dem Stream?', 'audio_music', 'Ja')}
+      ${faqItem('Welche Musik-Genre beim Zocken?', 'audio_genre', 'Meist Rap')}
+      ${faqItem('Copyright-freie Musik oder DMCA-Risk?', 'audio_copyright', 'Unterschiedlich')}
+      ${faqItem('Hast du ein Walk-in Lied?', 'audio_walkin', 'Nein')}
+    `)}
+
+    <!-- CONTENT CREATION -->
+    ${renderCategory('🎨 Content-Creation', icons.camera, `
+      ${faqItem('Machst du eigene Edits/Thumbnails?', 'content_edits', 'Ja')}
+      ${faqItem('Wer schneidet deine Highlights?', 'content_highlights', 'Ich')}
+      ${faqItem('Planst du einen YouTube-Kanal?', 'content_youtube', 'Ist vorhanden')}
+      ${faqItem('Machst du TikTok-Content selbst?', 'content_tiktok', 'Ja')}
+      ${faqItem('Wie lange brauchst du für ein TikTok?', 'content_time', 'Unterschiedlich')}
+      ${faqItem('Planst du Content im Voraus?', 'content_planning', 'Meistens')}
+      ${faqItem('Improvisierst du oder Skript?', 'content_script', 'Improvisieren')}
+      ${faqItem('Welches Content-Format magst du am meisten?', 'content_format', 'Gaming')}
+      ${faqItem('Reagierst du auf Clips/Videos?', 'content_reactions', 'Nein, mache keine Reaktions')}
+    `)}
+
+    <!-- PHILOSOPHICAL -->
+    ${renderCategory('💭 Philosophisch/Deeper', icons.helpCircle, `
+      ${faqItem('Was bedeutet Community für dich?', 'philo_community', 'Noch nicht beantwortet')}
+      ${faqItem('Größte Lektion durchs Streaming gelernt?', 'philo_lesson', 'Jeder hat eine Meinung zu dir und mach das was dir Spaß macht, nicht was andere wollen')}
+      ${faqItem('Was würdest du deinem früheren Ich sagen?', 'philo_past', 'Lass sie reden, mach das worauf du Bock hast und lass dich nicht ausnutzen!')}
+      ${faqItem('Was motiviert dich weiterzumachen?', 'philo_motivation', 'Meine Zuschauer motivieren mich')}
+      ${faqItem('Bereust du jemals mit Streaming angefangen zu haben?', 'philo_regret', 'Nein')}
+    `)}
+
+    <!-- SCHEDULE -->
+    ${renderCategory('📅 Schedule', icons.calendar, `
+      ${faqItem('Änderst du deinen Stream-Plan oft?', 'schedule_change', 'Nein')}
+      ${faqItem('Wie weit im Voraus planst du?', 'schedule_advance', 'Meist 1 Woche')}
+      ${faqItem('Gibt es Extra-Streams?', 'schedule_extra', 'Ja')}
+    `)}
+
+    <!-- TROUBLESHOOTING -->
+    ${renderCategory('🔧 Troubleshooting', icons.settings, `
+      ${faqItem('Was tun bei Stream-Lag?', 'trouble_lag', 'Sag Bescheid wenn\'s laggt!')}
+      ${faqItem('Was tun wenn ich gebannt wurde?', 'trouble_ban', 'Auf Discord gehen und im Support ein Ticket ziehen')}
+      ${faqItem('App funktioniert nicht - was tun?', 'trouble_app', 'Mich kontaktieren oder meinen Mod')}
+      ${faqItem('Discord-Link funktioniert nicht?', 'trouble_discord', 'Auch da wieder kontaktieren')}
+    `)}
+
   </div>`;
 }
 
