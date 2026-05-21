@@ -1203,14 +1203,27 @@ function renderProfile() {
   </div>`;
 }
 // ─── FAQ ──────────────────────────────────────────────────────────
+// ─── FAQ ──────────────────────────────────────────────────────────
+let faqEditMode = false;
+let localFAQ = {};
+
 function renderFAQ() {
   const u = currentUser;
   const isOwner = u.role === 'Owner';
-  const faq = metaData?.faq || {};
+  const faq = faqEditMode ? localFAQ : (metaData?.faq || {});
   
   // Helper to render a collapsible FAQ item
   function faqItem(question, answerKey, defaultAnswer = 'Noch nicht beantwortet') {
     const answer = faq[answerKey] || defaultAnswer;
+    if (faqEditMode) {
+      return `
+        <div class="p-4 bg-white/5 rounded-xl">
+          <label class="text-xs font-bold text-white/60 mb-2 block">${question}</label>
+          <textarea data-faq-key="${answerKey}" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-brand-purple resize-y min-h-[60px]">${answer}</textarea>
+        </div>
+      `;
+    }
+    
     return `
       <details class="group">
         <summary class="flex items-center justify-between cursor-pointer p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all list-none">
@@ -1244,10 +1257,59 @@ function renderFAQ() {
         <h1 class="text-3xl md:text-4xl font-black text-white uppercase tracking-tight mb-2">FAQ</h1>
         <p class="text-white/40 text-sm">Häufig gestellte Fragen</p>
       </div>
-      ${isOwner ? `<button id="editFAQBtn" class="px-4 py-2 bg-brand-purple hover:bg-brand-purple/80 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2">
+      ${isOwner ? (faqEditMode ? `
+        <div class="flex gap-2">
+          <button id="saveFAQBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2">
+            ${icons.save} SPEICHERN
+          </button>
+          <button id="cancelFAQBtn" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white rounded-xl font-bold text-sm transition-all">
+            ABBRECHEN
+          </button>
+        </div>
+      ` : `<button id="editFAQBtn" class="px-4 py-2 bg-brand-purple hover:bg-brand-purple/80 text-white rounded-xl font-bold text-sm transition-all flex items-center gap-2">
         ${icons.edit} BEARBEITEN
-      </button>` : ''}
+      </button>`) : ''}
     </div>
+
+    <!-- EMOTIONAL/PHILOSOPHICAL CATEGORIES FIRST -->
+    ${renderCategory('💭 Philosophisch/Deeper', icons.helpCircle, `
+      ${faqItem('Was bedeutet Community für dich?', 'philo_community', 'Noch nicht beantwortet')}
+      ${faqItem('Größte Lektion durchs Streaming gelernt?', 'philo_lesson', 'Jeder hat eine Meinung zu dir und mach das was dir Spaß macht, nicht was andere wollen')}
+      ${faqItem('Was würdest du deinem früheren Ich sagen?', 'philo_past', 'Lass sie reden, mach das worauf du Bock hast und lass dich nicht ausnutzen!')}
+      ${faqItem('Was motiviert dich weiterzumachen?', 'philo_motivation', 'Meine Zuschauer motivieren mich')}
+      ${faqItem('Bereust du jemals mit Streaming angefangen zu haben?', 'philo_regret', 'Nein')}
+    `)}
+
+    ${renderCategory('😂 Stream-Momente', icons.trophy, `
+      ${faqItem('Größtes Stream-Highlight bisher?', 'moments_highlight', '-')}
+      ${faqItem('Peinlichster Stream-Moment?', 'moments_embarrassing', 'Peinlich? Kann man das essen?')}
+      ${faqItem('Lustigster Community-Moment?', 'moments_funny', '1 Sek. Face Reveal')}
+      ${faqItem('Wie gehst du mit Hate um?', 'moments_hate', 'Entspannt')}
+    `)}
+
+    ${renderCategory('👥 Community - Interaction', icons.usercog, `
+      ${faqItem('Spielst du mit Zuschauern?', 'community_playwith', 'Ja, außer es wird was anderes gesagt')}
+      ${faqItem('Wie werde ich Mod?', 'community_mod', 'Nicht durch fragen')}
+      ${faqItem('Wie kann ich dich unterstützen?', 'community_support', 'Anwesenheit, Aktiv sein')}
+      ${faqItem('Gibt es Merch?', 'community_merch', 'Planung ja, vorhanden nein')}
+      ${faqItem('Wie alt muss man sein um beizutreten?', 'community_age', 'Unterschiedlich')}
+      ${faqItem('Gibt es Subscriber-Only Events?', 'community_subevents', 'Irgendwann vielleicht')}
+      ${faqItem('Gibt es VIP/Sub Vorteile?', 'community_subperks', 'Irgendwann vielleicht')}
+      ${faqItem('Kann ich als Gast mitmachen?', 'community_guest', 'Muss gefragt werden')}
+    `)}
+
+    ${renderCategory('👥 Community - Engagement', icons.trophy, `
+      ${faqItem('Machst du Community-Challenges?', 'community_challenges', 'Ja')}
+      ${faqItem('Nimmst du Spiel-Vorschläge an?', 'community_suggestions', 'Ja')}
+      ${faqItem('Machst du Subscriber-Games?', 'community_subgames', 'Aktuell nicht')}
+      ${faqItem('Würdest du gegen Community antreten?', 'community_compete', 'Aktuell nicht')}
+    `)}
+
+    ${renderCategory('👥 Community - Highlights', icons.award, `
+      ${faqItem('Größtes Community-Highlight bisher?', 'community_highlight', 'Puh')}
+      ${faqItem('Erinnerst du dich an deinen ersten Viewer?', 'community_firstviewer', 'Ja [Blast]')}
+      ${faqItem('Erinnerst du dich an deinen ersten Sub?', 'community_firstsub', 'Aktuell nicht vorhanden')}
+    `)}
 
     <!-- STREAMING CATEGORIES -->
     ${renderCategory('📺 Streaming - Basics', icons.twitch, `
@@ -1365,31 +1427,6 @@ function renderFAQ() {
       ${faqItem('Kaffee oder Energy?', 'personal_drink', 'Energy')}
     `)}
 
-    <!-- COMMUNITY CATEGORIES -->
-    ${renderCategory('👥 Community - Interaction', icons.usercog, `
-      ${faqItem('Spielst du mit Zuschauern?', 'community_playwith', 'Ja, außer es wird was anderes gesagt')}
-      ${faqItem('Wie werde ich Mod?', 'community_mod', 'Nicht durch fragen')}
-      ${faqItem('Wie kann ich dich unterstützen?', 'community_support', 'Anwesenheit, Aktiv sein')}
-      ${faqItem('Gibt es Merch?', 'community_merch', 'Planung ja, vorhanden nein')}
-      ${faqItem('Wie alt muss man sein um beizutreten?', 'community_age', 'Unterschiedlich')}
-      ${faqItem('Gibt es Subscriber-Only Events?', 'community_subevents', 'Irgendwann vielleicht')}
-      ${faqItem('Gibt es VIP/Sub Vorteile?', 'community_subperks', 'Irgendwann vielleicht')}
-      ${faqItem('Kann ich als Gast mitmachen?', 'community_guest', 'Muss gefragt werden')}
-    `)}
-
-    ${renderCategory('👥 Community - Engagement', icons.trophy, `
-      ${faqItem('Machst du Community-Challenges?', 'community_challenges', 'Ja')}
-      ${faqItem('Nimmst du Spiel-Vorschläge an?', 'community_suggestions', 'Ja')}
-      ${faqItem('Machst du Subscriber-Games?', 'community_subgames', 'Aktuell nicht')}
-      ${faqItem('Würdest du gegen Community antreten?', 'community_compete', 'Aktuell nicht')}
-    `)}
-
-    ${renderCategory('👥 Community - Highlights', icons.award, `
-      ${faqItem('Größtes Community-Highlight bisher?', 'community_highlight', 'Puh')}
-      ${faqItem('Erinnerst du dich an deinen ersten Viewer?', 'community_firstviewer', 'Ja [Blast]')}
-      ${faqItem('Erinnerst du dich an deinen ersten Sub?', 'community_firstsub', 'Aktuell nicht vorhanden')}
-    `)}
-
     <!-- MONEY/SUPPORT -->
     ${renderCategory('💰 Geld/Support', icons.award, `
       ${faqItem('Kann man vom Streaming leben?', 'money_live', 'Bestimmt, ich nicht')}
@@ -1420,14 +1457,6 @@ function renderFAQ() {
       ${faqItem('Würdest du dein Gesicht zeigen?', 'future_face', 'Nein')}
       ${faqItem('Planst du andere Plattformen?', 'future_platforms', 'Spotify')}
       ${faqItem('Wenn du mit JEDEM Streamer collab könntest - wer?', 'future_dream_collab', 'HandOfBlood')}
-    `)}
-
-    <!-- STREAM MOMENTS -->
-    ${renderCategory('😂 Stream-Momente', icons.trophy, `
-      ${faqItem('Größtes Stream-Highlight bisher?', 'moments_highlight', '-')}
-      ${faqItem('Peinlichster Stream-Moment?', 'moments_embarrassing', 'Peinlich? Kann man das essen?')}
-      ${faqItem('Lustigster Community-Moment?', 'moments_funny', '1 Sek. Face Reveal')}
-      ${faqItem('Wie gehst du mit Hate um?', 'moments_hate', 'Entspannt')}
     `)}
 
     <!-- INTERACTION -->
@@ -1468,15 +1497,6 @@ function renderFAQ() {
       ${faqItem('Reagierst du auf Clips/Videos?', 'content_reactions', 'Nein, mache keine Reaktions')}
     `)}
 
-    <!-- PHILOSOPHICAL -->
-    ${renderCategory('💭 Philosophisch/Deeper', icons.helpCircle, `
-      ${faqItem('Was bedeutet Community für dich?', 'philo_community', 'Noch nicht beantwortet')}
-      ${faqItem('Größte Lektion durchs Streaming gelernt?', 'philo_lesson', 'Jeder hat eine Meinung zu dir und mach das was dir Spaß macht, nicht was andere wollen')}
-      ${faqItem('Was würdest du deinem früheren Ich sagen?', 'philo_past', 'Lass sie reden, mach das worauf du Bock hast und lass dich nicht ausnutzen!')}
-      ${faqItem('Was motiviert dich weiterzumachen?', 'philo_motivation', 'Meine Zuschauer motivieren mich')}
-      ${faqItem('Bereust du jemals mit Streaming angefangen zu haben?', 'philo_regret', 'Nein')}
-    `)}
-
     <!-- SCHEDULE -->
     ${renderCategory('📅 Schedule', icons.calendar, `
       ${faqItem('Änderst du deinen Stream-Plan oft?', 'schedule_change', 'Nein')}
@@ -1486,7 +1506,7 @@ function renderFAQ() {
 
     <!-- TROUBLESHOOTING -->
     ${renderCategory('🔧 Troubleshooting', icons.settings, `
-      ${faqItem('Was tun bei Stream-Lag?', 'trouble_lag', 'Sag Bescheid wenn\'s laggt!')}
+      ${faqItem('Was tun bei Stream-Lag?', 'trouble_lag', 'Sag Bescheid wenn\\'s laggt!')}
       ${faqItem('Was tun wenn ich gebannt wurde?', 'trouble_ban', 'Auf Discord gehen und im Support ein Ticket ziehen')}
       ${faqItem('App funktioniert nicht - was tun?', 'trouble_app', 'Mich kontaktieren oder meinen Mod')}
       ${faqItem('Discord-Link funktioniert nicht?', 'trouble_discord', 'Auch da wieder kontaktieren')}
@@ -1494,7 +1514,6 @@ function renderFAQ() {
 
   </div>`;
 }
-
 // ─── SETTINGS ─────────────────────────────────────────────────
 let showDeleteConfirm = false;
 let isDeleting = false;
@@ -2093,6 +2112,33 @@ function bindViewEvents() {
     await Promise.all(deletePromises);
     await Promise.all(deletePromises);
     alert('✅ Chat wurde geleert!');
+  });
+  
+  // FAQ Edit Mode
+  document.getElementById('editFAQBtn')?.addEventListener('click', () => {
+    faqEditMode = true;
+    localFAQ = JSON.parse(JSON.stringify(metaData?.faq || {}));
+    updateView();
+  });
+  
+  document.getElementById('cancelFAQBtn')?.addEventListener('click', () => {
+    faqEditMode = false;
+    localFAQ = {};
+    updateView();
+  });
+  
+  document.getElementById('saveFAQBtn')?.addEventListener('click', async () => {
+    // Collect all FAQ values from textareas
+    document.querySelectorAll('[data-faq-key]').forEach(textarea => {
+      const key = textarea.dataset.faqKey;
+      localFAQ[key] = textarea.value;
+    });
+    
+    // Save to Firebase
+    await updateDoc(doc(db, 'meta', 'nightwither'), { faq: localFAQ });
+    faqEditMode = false;
+    localFAQ = {};
+    updateView();
   });
 }
 
