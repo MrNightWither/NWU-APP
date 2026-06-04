@@ -892,15 +892,15 @@ function renderAbout() {
         <div class="p-2 bg-brand-purple/20 rounded-xl text-brand-purple flex-shrink-0">${icons.crown}</div>
         <div class="flex-1 min-w-0">
           <h3 class="text-base font-black text-white uppercase italic">NightWither</h3>
-        </div>
-        <div class="flex gap-3 flex-shrink-0">
-          <div class="text-right">
-            <span class="text-[9px] font-black text-brand-purple uppercase tracking-widest block font-mono">Gegründet</span>
-            <span class="text-sm font-bold text-white">${m?.founded||'2025'}</span>
-          </div>
-          <div class="text-right">
-            <span class="text-[9px] font-black text-red-600 uppercase tracking-widest block font-mono">Region</span>
-            <span class="text-sm font-bold text-white">${m?.region||'Germany'}</span>
+          <div class="flex gap-4 mt-1">
+            <div>
+              <span class="text-[9px] font-black text-brand-purple uppercase tracking-widest block font-mono">Gegründet</span>
+              <span class="text-sm font-bold text-white">${m?.founded||'2025'}</span>
+            </div>
+            <div>
+              <span class="text-[9px] font-black text-red-600 uppercase tracking-widest block font-mono">Region</span>
+              <span class="text-sm font-bold text-white">${m?.region||'Germany'}</span>
+            </div>
           </div>
         </div>
       </div>
