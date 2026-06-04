@@ -284,6 +284,7 @@ const icons = {
   youtube: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor"/></svg>`,
   instagram: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>`,
   music: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+  tiktok: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.2 8.2 0 0 0 4.79 1.53V6.75a4.85 4.85 0 0 1-1.02-.06z"/></svg>`,
   helpCircle: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
 };
 
@@ -481,14 +482,14 @@ function renderMain() {
 
     <!-- Mobile Bottom Nav -->
     <nav class="md:hidden fixed bottom-4 left-4 right-4 h-16 bg-brand-panel/90 backdrop-blur border border-white/10 rounded-2xl flex items-center justify-around px-2 z-50 shadow-2xl">
-      <button data-nav="home" class="p-3 rounded-lg nav-mob ${activeView==='home'?'text-brand-purple':'text-white/40'}">${icons.share2}</button>
-      <button data-nav="schedule" class="p-3 rounded-lg nav-mob ${activeView==='schedule'?'text-brand-purple':'text-white/40'}">${icons.calendar}</button>
-      <button data-nav="chat" class="p-3 rounded-lg nav-mob ${activeView==='chat'?'text-brand-purple':'text-white/40'}">${icons.message}</button>
-      ${!gst ? `<button data-nav="events" class="p-3 rounded-lg nav-mob ${activeView==='events'?'text-brand-purple':'text-white/40'}">${icons.trophy}</button>
-      <button data-nav="about" class="p-3 rounded-lg nav-mob ${activeView==='about'?'text-brand-purple':'text-white/40'}">${icons.usercircle}</button>
-      <button data-nav="profile" class="p-3 rounded-lg nav-mob ${activeView==='profile'?'text-brand-purple':'text-white/40'}">${icons.user}</button>
-      <button data-nav="faq" class="p-3 rounded-lg nav-mob ${activeView==='faq'?'text-brand-purple':'text-white/40'}">${icons.helpCircle}</button>` : ''}
-      ${adm ? `<button data-nav="community" class="p-3 rounded-lg nav-mob ${activeView==='community'?'text-brand-purple':'text-white/40'}">${icons.usercog}</button>` : ''}
+      <button data-nav="home" class="p-3 rounded-xl nav-mob transition-all ${activeView==='home'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.share2}</button>
+      <button data-nav="schedule" class="p-3 rounded-xl nav-mob transition-all ${activeView==='schedule'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.calendar}</button>
+      <button data-nav="chat" class="p-3 rounded-xl nav-mob transition-all ${activeView==='chat'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.message}</button>
+      ${!gst ? `<button data-nav="events" class="p-3 rounded-xl nav-mob transition-all ${activeView==='events'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.trophy}</button>
+      <button data-nav="about" class="p-3 rounded-xl nav-mob transition-all ${activeView==='about'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.usercircle}</button>
+      <button data-nav="profile" class="p-3 rounded-xl nav-mob transition-all ${activeView==='profile'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.user}</button>
+      <button data-nav="faq" class="p-3 rounded-xl nav-mob transition-all ${activeView==='faq'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.helpCircle}</button>` : ''}
+      ${adm ? `<button data-nav="community" class="p-3 rounded-xl nav-mob transition-all ${activeView==='community'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.usercog}</button>` : ''}
     </nav>
 
     <!-- Main -->
@@ -525,7 +526,7 @@ function renderMain() {
 function navItem(view, iconKey, label) {
   const active = activeView === view;
   return `<div class="relative nav-item">
-    <button data-nav="${view}" class="nav-mob w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${active?'bg-brand-purple text-white shadow-lg shadow-purple-600/30':'text-white/40 hover:text-white hover:bg-white/5'}">${icons[iconKey]}</button>
+    <button data-nav="${view}" class="nav-mob w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${active?'bg-brand-purple text-white shadow-lg shadow-purple-600/30':'text-white/40 hover:text-white hover:bg-white/5'}" style="${active?'color:white;':''}">${icons[iconKey]}</button>
     <span class="nav-tooltip absolute left-14 top-1/2 -translate-y-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap z-50">${label}</span>
   </div>`;
 }
@@ -622,7 +623,7 @@ function renderHome() {
       <div class="flex flex-col gap-2">
         ${socialNode(icons.message,'Discord',f.discord?f.discord+' Member':'Discord','#5865F2',s.discord?.startsWith('http')?s.discord:`https://discord.gg/${s.discord||''}`)}
         ${socialNode(icons.twitch,'Twitch',f.twitch?f.twitch+' Follower':'Twitch','#9146FF',s.twitch?.startsWith('http')?s.twitch:`https://twitch.tv/${s.twitch||''}`)}
-        ${socialNode(icons.music,'TikTok',f.tiktok?f.tiktok+' Follower':'TikTok','#010101',s.tiktok?.startsWith('http')?s.tiktok:`https://tiktok.com/@${s.tiktok||''}`)}
+        ${socialNode(icons.tiktok,'TikTok',f.tiktok?f.tiktok+' Follower':'TikTok','#010101',s.tiktok?.startsWith('http')?s.tiktok:`https://tiktok.com/@${s.tiktok||''}`)}
         ${socialNode(icons.youtube,'YouTube',f.youtube?f.youtube+' Subs':'YouTube','#FF0000',s.youtube?.startsWith('http')?s.youtube:`https://youtube.com/${s.youtube||''}`)}
         ${socialNode(icons.music,'Spotify',f.spotify?f.spotify+' Hörer':'Spotify','#1DB954',s.spotify?.startsWith('http')?s.spotify:`https://open.spotify.com/search/${s.spotify||''}`)}
         ${socialNode(icons.crown,'Kick',f.kick?f.kick+' Follower':'Kick','#53FC18',s.kick?.startsWith('http')?s.kick:`https://kick.com/${s.kick||''}`)}
