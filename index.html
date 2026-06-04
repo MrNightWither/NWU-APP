@@ -547,8 +547,8 @@ function updateView() {
   if (vc) { vc.className = 'fade-in'; vc.innerHTML = renderView(); bindViewEvents(); }
   // update nav highlights
   document.querySelectorAll('.nav-mob[data-nav]').forEach(b => {
-    b.className = b.className.replace(/text-brand-purple|text-white\/40|bg-brand-purple.*?shadow-purple-600\/30/g, '');
-    if (b.dataset.nav === activeView) b.classList.add('text-brand-purple','bg-brand-purple','shadow-lg','shadow-purple-600/30');
+    b.className = b.className.replace(/text-brand-purple|text-white\/40|text-white|bg-brand-purple.*?shadow-purple-600\/30/g, '');
+    if (b.dataset.nav === activeView) b.classList.add('bg-brand-purple','text-white','shadow-lg','shadow-purple-600/30');
     else b.classList.add('text-white/40');
   });
 }
