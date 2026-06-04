@@ -575,10 +575,13 @@ function renderHome() {
   const f = s.followers || {};
 
   function socialNode(icon, name, stats, color, url) {
-    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="bg-brand-card border border-white/5 rounded-[24px] p-6 flex flex-col items-center gap-4 transition-all hover:bg-white/[0.04] hover:-translate-y-1 hover:border-white/10 cursor-pointer">
-      <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-xl" style="background:${color}20;color:${color};border:1px solid ${color}40">${icon}</div>
-      <div class="text-center"><h4 class="text-sm font-black text-white uppercase tracking-tight">${name}</h4><span class="text-[10px] text-white/30 font-bold uppercase tracking-widest">${stats}</span></div>
-      <span class="text-white/20">${icons.chevron}</span>
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="bg-brand-card border border-white/5 rounded-2xl px-4 py-3 flex items-center gap-3 transition-all hover:bg-white/[0.04] hover:border-white/10 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${color}20;color:${color};border:1px solid ${color}40">${icon}</div>
+      <div class="flex-1 flex items-center gap-2 min-w-0">
+        <h4 class="text-xs font-black text-white uppercase tracking-tight">${name}</h4>
+        <span class="text-[10px] text-white/30 font-bold">${stats}</span>
+      </div>
+      <span class="text-white/20 flex-shrink-0">${icons.chevron}</span>
     </a>`;
   }
 
@@ -616,7 +619,7 @@ function renderHome() {
         <h2 class="text-3xl md:text-5xl font-black uppercase italic tracking-tighter text-white">Netzwerke</h2>
         <p class="text-white/40 font-medium tracking-widest uppercase text-[10px]">Die NightWitherUnity Kanäle</p>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      <div class="flex flex-col gap-2">
         ${socialNode(icons.message,'Discord',f.discord?f.discord+' Member':'Discord','#5865F2',s.discord?.startsWith('http')?s.discord:`https://discord.gg/${s.discord||''}`)}
         ${socialNode(icons.twitch,'Twitch',f.twitch?f.twitch+' Follower':'Twitch','#9146FF',s.twitch?.startsWith('http')?s.twitch:`https://twitch.tv/${s.twitch||''}`)}
         ${socialNode(icons.music,'TikTok',f.tiktok?f.tiktok+' Follower':'TikTok','#010101',s.tiktok?.startsWith('http')?s.tiktok:`https://tiktok.com/@${s.tiktok||''}`)}
