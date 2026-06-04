@@ -1436,4 +1436,917 @@ function renderFAQ() {
       ${faqItem('Gibt es Merch?', 'money_merch', 'In Planung, vorhanden nein')}
       ${faqItem('Twitch Partner oder Affiliate?', 'money_partner', 'Nein, will noch nicht')}
       ${faqItem('Verrückteste Donation-Message?', 'money_donation_crazy', '-')}
-      ${faqItem('Lustigste Donation-Message?', 'money_donatio
+      ${faqItem('Lustigste Donation-Message?', 'money_donation_funny', '-')}
+    `)}
+
+    <!-- BRANDING -->
+    ${renderCategory('🎨 Branding', icons.star, `
+      ${faqItem('Bedeutung hinter "NightWither"?', 'branding_name', 'Später')}
+      ${faqItem('Warum Lila/Purple als Farbe?', 'branding_color', 'Mag die Farbe [#D500F9]')}
+      ${faqItem('Wer hat dein Logo gemacht?', 'branding_logo', 'Ich')}
+      ${faqItem('Wer hat Overlays/Emotes designed?', 'branding_overlays', 'Ich')}
+      ${faqItem('Warum "Unity" als Community-Name?', 'branding_unity', 'Einheit und Zusammenhalt')}
+    `)}
+
+    <!-- FUTURE -->
+    ${renderCategory('🔮 Zukunft', icons.calendar, `
+      ${faqItem('Streaming-Ziele?', 'future_goals', 'Viele erreichen')}
+      ${faqItem('Events geplant?', 'future_events', 'Ja')}
+      ${faqItem('Collabs geplant?', 'future_collabs', 'Möglich ;)')}
+      ${faqItem('IRL-Streams geplant?', 'future_irl', 'Ja')}
+      ${faqItem('Würdest du dein Gesicht zeigen?', 'future_face', 'Nein')}
+      ${faqItem('Planst du andere Plattformen?', 'future_platforms', 'Spotify')}
+      ${faqItem('Wenn du mit JEDEM Streamer collab könntest - wer?', 'future_dream_collab', 'HandOfBlood')}
+    `)}
+
+    <!-- INTERACTION -->
+    ${renderCategory('💬 Interaktion', icons.message, `
+      ${faqItem('Liest du alle Chat-Nachrichten?', 'interaction_readall', 'Ja')}
+      ${faqItem('Antwortest du auf DMs?', 'interaction_dms', 'Ja')}
+      ${faqItem('Wie schnell antwortest du?', 'interaction_speed', 'Kommt drauf an')}
+      ${faqItem('Bevorzugte Kontaktmethode?', 'interaction_method', 'Egal')}
+      ${faqItem('Wie kann ich dich kontaktieren?', 'interaction_how', 'Alles verlinkt')}
+    `)}
+
+    <!-- SOCIAL MEDIA -->
+    ${renderCategory('📱 Social Media', icons.share2, `
+      ${faqItem('Postest du auf Instagram/X/Twitter?', 'social_platforms', 'Insta ja, Twitter hab ich nicht')}
+      ${faqItem('Welche Platform nutzt du am meisten?', 'social_most', 'TikTok für Content')}
+      ${faqItem('Antwortest du auf DMs?', 'social_dms', 'Ja')}
+      ${faqItem('Wie oft postest du auf TikTok?', 'social_tiktok', 'Normal täglich, aktuell 3 Tage pro Woche')}
+    `)}
+
+    <!-- AUDIO/MUSIC -->
+    ${renderCategory('🎤 Audio/Musik', icons.music, `
+      ${faqItem('Hörst du Musik während dem Stream?', 'audio_music', 'Ja')}
+      ${faqItem('Welche Musik-Genre beim Zocken?', 'audio_genre', 'Meist Rap')}
+      ${faqItem('Copyright-freie Musik oder DMCA-Risk?', 'audio_copyright', 'Unterschiedlich')}
+      ${faqItem('Hast du ein Walk-in Lied?', 'audio_walkin', 'Nein')}
+    `)}
+
+    <!-- CONTENT CREATION -->
+    ${renderCategory('🎨 Content-Creation', icons.camera, `
+      ${faqItem('Machst du eigene Edits/Thumbnails?', 'content_edits', 'Ja')}
+      ${faqItem('Wer schneidet deine Highlights?', 'content_highlights', 'Ich')}
+      ${faqItem('Planst du einen YouTube-Kanal?', 'content_youtube', 'Ist vorhanden')}
+      ${faqItem('Machst du TikTok-Content selbst?', 'content_tiktok', 'Ja')}
+      ${faqItem('Wie lange brauchst du für ein TikTok?', 'content_time', 'Unterschiedlich')}
+      ${faqItem('Planst du Content im Voraus?', 'content_planning', 'Meistens')}
+      ${faqItem('Improvisierst du oder Skript?', 'content_script', 'Improvisieren')}
+      ${faqItem('Welches Content-Format magst du am meisten?', 'content_format', 'Gaming')}
+      ${faqItem('Reagierst du auf Clips/Videos?', 'content_reactions', 'Nein, mache keine Reaktions')}
+    `)}
+
+    <!-- SCHEDULE -->
+    ${renderCategory('📅 Schedule', icons.calendar, `
+      ${faqItem('Änderst du deinen Stream-Plan oft?', 'schedule_change', 'Nein')}
+      ${faqItem('Wie weit im Voraus planst du?', 'schedule_advance', 'Meist 1 Woche')}
+      ${faqItem('Gibt es Extra-Streams?', 'schedule_extra', 'Ja')}
+    `)}
+
+    <!-- TROUBLESHOOTING -->
+    ${renderCategory('🔧 Troubleshooting', icons.settings, `
+      ${faqItem('Was tun bei Stream-Lag?', 'trouble_lag', 'Sag Bescheid wenn es laggt!')}
+      ${faqItem('Was tun wenn ich gebannt wurde?', 'trouble_ban', 'Auf Discord gehen und im Support ein Ticket ziehen')}
+      ${faqItem('App funktioniert nicht - was tun?', 'trouble_app', 'Mich kontaktieren oder meinen Mod')}
+      ${faqItem('Discord-Link funktioniert nicht?', 'trouble_discord', 'Auch da wieder kontaktieren')}
+    `)}
+
+  </div>`;
+}
+// ─── SETTINGS ─────────────────────────────────────────────────
+let showDeleteConfirm = false;
+let isDeleting = false;
+
+function renderSettings() {
+  const u = currentUser;
+  if (!u) return '';
+  return `
+  <div class="max-w-2xl mx-auto space-y-10 pb-20">
+    <div><h2 class="text-3xl font-black uppercase italic tracking-tighter text-white">Einstellungen</h2>
+    <p class="text-white/40 text-sm mt-1">Verwalte dein Konto und Unity-Präferenzen.</p></div>
+    <div class="bg-brand-card border border-white/5 rounded-[32px] p-6 md:p-8 space-y-8">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-brand-purple/20 rounded-xl flex items-center justify-center text-brand-purple">${icons.user}</div>
+          <div><h4 class="text-white font-bold">${u.displayName}</h4><p class="text-xs text-white/40">${u.email}</p></div>
+        </div>
+        <button id="logoutSettingsBtn" class="px-6 py-2.5 bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-500/20">Abmelden</button>
+      </div>
+      <div class="h-px bg-white/5"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="p-3 bg-white/5 rounded-xl border border-white/5">
+          <span class="text-[8px] text-white/30 uppercase block mb-1">Berechtigungsstufe</span>
+          <span class="text-xs font-bold text-white flex items-center gap-2">${icons.shield} ${u.role}</span>
+        </div>
+        <div class="p-3 bg-white/5 rounded-xl border border-white/5">
+          <span class="text-[8px] text-white/30 uppercase block mb-1">Push Notifications</span>
+          <span class="text-xs font-bold text-green-400 flex items-center gap-2">${icons.bell} Aktiv</span>
+        </div>
+      </div>
+      <div class="space-y-3">
+        <h5 class="text-[10px] font-black text-white/20 uppercase tracking-widest">Darstellung & System</h5>
+        <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+          <div class="flex items-center gap-3"><span class="text-brand-purple">${icons.activity}</span><span class="text-sm font-medium text-white">Performance-Modus</span></div>
+          <div class="w-10 h-5 bg-brand-purple rounded-full relative"><div class="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full"></div></div>
+        </div>
+      </div>
+    </div>
+
+    ${(u.role === 'Owner' || u.role === 'Moderator') ? `<div class="bg-brand-card border border-white/5 rounded-[32px] p-6 md:p-8 space-y-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 bg-brand-purple/20 rounded-xl flex items-center justify-center text-brand-purple">${icons.shield}</div>
+        <div>
+          <h5 class="text-sm font-black text-white uppercase tracking-widest">Chat-Moderation</h5>
+          <p class="text-[10px] text-white/40">Verwalte Chat-Filter und Moderation-Tools</p>
+        </div>
+      </div>
+      
+      ${u.role === 'Owner' ? `<div class="space-y-4">
+        <h6 class="text-[10px] font-black text-white/20 uppercase tracking-widest">Filter-Einstellungen (Owner)</h6>
+        
+        <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-purple">🚫</span>
+            <div>
+              <span class="text-sm font-medium text-white block">Schimpfwort-Filter</span>
+              <span class="text-[10px] text-white/40">Zensiert Blacklist-Wörter zu ***</span>
+            </div>
+          </div>
+          <button id="toggleWordFilterBtn" class="relative w-12 h-6 rounded-full transition-colors ${chatFilterEnabled ? 'bg-brand-purple' : 'bg-white/10'}">
+            <div class="absolute top-0.5 ${chatFilterEnabled ? 'right-0.5' : 'left-0.5'} w-5 h-5 bg-white rounded-full transition-all"></div>
+          </button>
+        </div>
+        
+        <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+          <div class="flex items-center gap-3">
+            <span class="text-brand-purple">🔗</span>
+            <div>
+              <span class="text-sm font-medium text-white block">Link-Filter</span>
+              <span class="text-[10px] text-white/40">User können keine Links senden</span>
+            </div>
+          </div>
+          <button id="toggleLinkFilterBtn" class="relative w-12 h-6 rounded-full transition-colors ${linkFilterEnabled ? 'bg-brand-purple' : 'bg-white/10'}">
+            <div class="absolute top-0.5 ${linkFilterEnabled ? 'right-0.5' : 'left-0.5'} w-5 h-5 bg-white rounded-full transition-all"></div>
+          </button>
+        </div>
+      </div>` : ''}
+      
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h6 class="text-[10px] font-black text-white/20 uppercase tracking-widest">Blacklist-Wörter</h6>
+            <p class="text-[9px] text-white/30 mt-1">Gesamt: ${chatFilterWordsList.length} Wörter in ${Object.keys(chatFilterWords).length} Kategorien (A-Z)</p>
+          </div>
+          <button id="addWordBtn" class="px-3 py-1.5 bg-brand-purple/20 text-brand-purple text-[10px] font-black uppercase rounded-lg hover:bg-brand-purple hover:text-white transition-all">${icons.plus} Hinzufügen</button>
+        </div>
+        <div class="space-y-3 max-h-96 overflow-y-auto scrollbar-hide">
+          ${Object.entries(chatFilterWords).map(([letter, words]) => `
+            <div class="bg-white/5 rounded-xl border border-white/5 p-3">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-8 bg-brand-purple/20 rounded-lg flex items-center justify-center">
+                  <span class="text-brand-purple font-black text-sm">${letter}</span>
+                </div>
+                <span class="text-[9px] text-white/40 uppercase">${words.length} Wörter</span>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                ${words.map((word, idx) => `
+                  <div class="group relative">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/5 hover:bg-red-500/10 rounded-lg border border-white/5 hover:border-red-500/30 text-[10px] text-white/60 hover:text-red-500 font-mono transition-all cursor-pointer" data-remove-word-cat="${letter}" data-remove-word-idx="${idx}">
+                      ${word}
+                      <span class="text-[8px] opacity-0 group-hover:opacity-100 transition-opacity">✕</span>
+                    </span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      
+      <div class="space-y-3">
+        <h6 class="text-[10px] font-black text-white/20 uppercase tracking-widest">Moderation-Actions</h6>
+        <button id="clearChatBtn" class="w-full py-3 bg-red-500/10 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-xl border border-red-500/20 hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2">
+          🧹 Kompletten Chat Leeren
+        </button>
+      </div>
+      
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h6 class="text-[10px] font-black text-white/20 uppercase tracking-widest">Gebannte User</h6>
+          <span class="px-2 py-1 bg-red-500/10 text-red-500 text-[9px] font-black uppercase rounded-lg">${communityUsers.filter(u => u.isBanned).length} Gebannt</span>
+        </div>
+        ${communityUsers.filter(u => u.isBanned).length > 0 ? `
+          <div class="space-y-2 max-h-48 overflow-y-auto scrollbar-hide">
+            ${communityUsers.filter(user => user.isBanned).map(user => `
+                <div class="flex items-center justify-between p-3 bg-red-500/5 rounded-xl border border-red-500/20">
+                  <div class="flex items-center gap-3">
+                    <img src="${user.photoURL||'logo.png'}" class="w-10 h-10 rounded-xl object-cover border border-red-500/30" alt="${user.displayName}">
+                    <div>
+                      <span class="text-sm text-white/80 font-medium block">${user.displayName}</span>
+                      <span class="text-[9px] text-white/40">${user.email}</span>
+                    </div>
+                  </div>
+                  <button data-unban-settings="${user.uid}" class="px-3 py-1.5 bg-green-500/10 text-green-500 text-[9px] font-black uppercase rounded-lg hover:bg-green-500 hover:text-white transition-all">
+                    🔓 Unban
+                  </button>
+                </div>
+              `).join('')}
+          </div>
+        ` : `<div class="p-6 bg-white/5 rounded-xl border border-white/5 text-center">
+          <span class="text-sm text-white/40">Keine gebannten User</span>
+        </div>`}
+      </div>
+    </div>` : ''}
+
+    ${!isGuest(u) ? `<div class="p-6 md:p-8 border border-red-500/10 rounded-[32px] bg-red-500/5 space-y-4">
+      <h5 class="text-[10px] font-black text-red-500 uppercase tracking-widest">Gefahrenzone</h5>
+      <p class="text-xs text-red-500/40 leading-relaxed">Konto löschen entfernt alle Ränge, Punkte und verknüpfte Accounts unwiderruflich.</p>
+      ${!showDeleteConfirm ? `<button id="startDeleteBtn" class="w-full py-3 bg-red-600/10 text-red-500 text-[10px] font-black uppercase tracking-widest rounded-xl border border-red-600/20 hover:bg-red-600 hover:text-white transition-all">Konto unwiderruflich löschen</button>` :
+      `<div class="space-y-3">
+        <p class="text-[10px] text-red-500 font-bold uppercase text-center pulse-dot">Bist du wirklich sicher? Dies kann NICHT rückgängig gemacht werden!</p>
+        <div class="grid grid-cols-2 gap-3">
+          <button id="confirmDeleteBtn" ${isDeleting?'disabled':''} class="py-3 bg-red-600 text-white text-[10px] font-black uppercase rounded-xl hover:bg-red-700 transition-all disabled:opacity-50">${isDeleting?'Lösche...':'Ja, löschen'}</button>
+          <button id="cancelDeleteBtn" ${isDeleting?'disabled':''} class="py-3 bg-white/5 text-white/60 text-[10px] font-black uppercase rounded-xl hover:bg-white/10 transition-all disabled:opacity-50">Abbrechen</button>
+        </div>
+      </div>`}
+    </div>` : ''}
+  </div>`;
+}
+
+// ─── Event Bindings ────────────────────────────────────────────
+function bindViewEvents() {
+  // Home
+  document.getElementById('liveToggle')?.addEventListener('click', async () => {
+    if (!metaData) return;
+    await updateDoc(doc(db, 'meta', 'nightwither'), { isLive: !metaData.isLive });
+  });
+
+  // Schedule
+  document.getElementById('schedEditBtn')?.addEventListener('click', () => {
+    schedEditMode = !schedEditMode;
+    localSchedule = metaData?.schedule ? JSON.parse(JSON.stringify(metaData.schedule)) : JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
+    updateView();
+  });
+  document.querySelectorAll('[data-sched-task]').forEach(inp => {
+    inp.addEventListener('input', e => { 
+      if (!localSchedule) return;
+      localSchedule[parseInt(inp.dataset.schedTask)].task = e.target.value; 
+    });
+  });
+  document.querySelectorAll('[data-sched-time]').forEach(inp => {
+    inp.addEventListener('input', e => { 
+      if (!localSchedule) return;
+      localSchedule[parseInt(inp.dataset.schedTime)].time = e.target.value; 
+    });
+  });
+  document.getElementById('schedSaveBtn')?.addEventListener('click', async () => {
+    if (!localSchedule) return;
+    await updateDoc(doc(db, 'meta', 'nightwither'), { schedule: localSchedule });
+    schedEditMode = false; localSchedule = null; updateView();
+  });
+
+  // Events
+  document.getElementById('addAnnBtn')?.addEventListener('click', () => { isAddingEvent = true; updateView(); });
+  document.getElementById('closeAddBtn')?.addEventListener('click', () => { isAddingEvent = false; updateView(); });
+  document.getElementById('tabAnn')?.addEventListener('click', () => { isAddingEventType = false; updateView(); });
+  document.getElementById('tabEvt')?.addEventListener('click', () => { isAddingEventType = true; updateView(); });
+  document.getElementById('urgentBtn')?.addEventListener('click', () => { 
+    newAnn.title = document.getElementById('annTitle')?.value||'';
+    newAnn.subtitle = document.getElementById('annSub')?.value||'';
+    newAnn.url = document.getElementById('annUrl')?.value||'';
+    newAnn.urgent = !newAnn.urgent; updateView(); 
+  });
+  document.getElementById('saveAnnBtn')?.addEventListener('click', async () => {
+    newAnn.title = document.getElementById('annTitle')?.value||'';
+    newAnn.subtitle = document.getElementById('annSub')?.value||'';
+    newAnn.url = document.getElementById('annUrl')?.value||'';
+    if (!newAnn.title) return;
+    await addDoc(collection(db, 'announcements'), { ...newAnn, createdAt: serverTimestamp() });
+    newAnn = {title:'',subtitle:'',url:'',urgent:false}; isAddingEvent = false; updateView();
+  });
+  document.getElementById('saveEvtBtn')?.addEventListener('click', async () => {
+    newEvt.title = document.getElementById('evtTitle')?.value||'';
+    newEvt.prizePool = document.getElementById('evtPrize')?.value||'';
+    newEvt.description = document.getElementById('evtDesc')?.value||'';
+    newEvt.eventDate = document.getElementById('evtDate')?.value||'';
+    newEvt.type = document.getElementById('evtType')?.value||'tournament';
+    if (!newEvt.title) return;
+    await addDoc(collection(db, 'events'), { ...newEvt, registeredCount: 0, startTime: serverTimestamp() });
+    newEvt = {title:'',description:'',type:'tournament',prizePool:'',eventDate:new Date().toISOString().split('T')[0]};
+    isAddingEvent = false; updateView();
+  });
+  document.querySelectorAll('[data-del-event]').forEach(b => {
+    b.addEventListener('click', async e => { e.stopPropagation(); await deleteDoc(doc(db, 'events', b.dataset.delEvent)); });
+  });
+  document.querySelectorAll('[data-del-ann]').forEach(b => {
+    b.addEventListener('click', async () => await deleteDoc(doc(db, 'announcements', b.dataset.delAnn)));
+  });
+  document.querySelectorAll('[data-reg-event]').forEach(b => {
+    b.addEventListener('click', () => { registeringEvent = events.find(e => e.id === b.dataset.regEvent); updateView(); });
+  });
+  document.getElementById('closeRegBtn')?.addEventListener('click', () => { registeringEvent = null; updateView(); });
+  document.getElementById('regBg')?.addEventListener('click', () => { registeringEvent = null; updateView(); });
+  document.getElementById('submitRegBtn')?.addEventListener('click', async () => {
+    regForm.gamerTag = document.getElementById('regGamer')?.value||'';
+    regForm.age = document.getElementById('regAge')?.value||'';
+    regForm.discord = document.getElementById('regDiscord')?.value||'';
+    if (!regForm.gamerTag||!regForm.age||!regForm.discord) { alert('Bitte alle Felder ausfüllen.'); return; }
+    const u = currentUser;
+    
+    // Check if user is banned
+    if (u.isBanned) {
+      alert('🚫 Du wurdest gebannt und kannst dich nicht für Events registrieren.');
+      registeringEvent = null;
+      updateView();
+      return;
+    }
+    
+    await addDoc(collection(db, 'events', registeringEvent.id, 'registrations'), {
+      userId: u.uid, displayName: u.displayName, ...regForm, timestamp: serverTimestamp()
+    });
+    await updateDoc(doc(db, 'events', registeringEvent.id), { registeredCount: (registeringEvent.registeredCount||0)+1 });
+    
+    // Discord Webhook für Event-Anmeldungen
+    try {
+      await fetch('https://discord.com/api/webhooks/1506261180388343921/cFzGnOcfY692D--xD3VTMFLYNFIRYa_MYHfhchQwD5q68bvZOOT8fUx9MIvCiLTqcUf0', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          embeds: [{
+            title: '🎮 Neue Event-Anmeldung',
+            color: 0x9333ea,
+            fields: [
+              { name: 'Event', value: registeringEvent.title, inline: false },
+              { name: 'User', value: u.displayName, inline: true },
+              { name: 'GamerTag', value: regForm.gamerTag, inline: true },
+              { name: 'Alter', value: regForm.age, inline: true },
+              { name: 'Discord', value: regForm.discord, inline: true }
+            ],
+            timestamp: new Date().toISOString()
+          }]
+        })
+      });
+    } catch(e) { console.error('Discord webhook failed:', e); }
+    
+    alert('Erfolgreich angemeldet!');
+    regForm = {gamerTag:'',age:'',discord:''}; registeringEvent = null; updateView();
+  });
+  document.getElementById('bizSendBtn')?.addEventListener('click', async () => {
+    const email = document.getElementById('bizEmail')?.value;
+    const msg = document.getElementById('bizMsg')?.value;
+    if (!email||!msg) { alert('Bitte alle Felder ausfüllen.'); return; }
+    
+    // Discord Webhook für Kooperations-Anfragen
+    try {
+      await fetch('https://discord.com/api/webhooks/1506261871483682916/MboWlBuvEIBzn9KjAxrOuGNskmqkCuErsjGaFAIixDQmL_QyFUa8PeJ01i2VHNeYm5CO', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          embeds: [{
+            title: '💼 Neue Kooperations-Anfrage',
+            color: 0x3b82f6,
+            fields: [
+              { name: 'E-Mail', value: email, inline: false },
+              { name: 'Nachricht', value: msg.substring(0, 1000), inline: false }
+            ],
+            timestamp: new Date().toISOString()
+          }]
+        })
+      });
+      alert('Anfrage erfolgreich gesendet!');
+      document.getElementById('bizEmail').value = '';
+      document.getElementById('bizMsg').value = '';
+    } catch(e) {
+      console.error('Discord webhook failed:', e);
+      alert('Fehler beim Senden. Bitte versuche es erneut.');
+    }
+  });
+
+  // About
+  document.getElementById('aboutEditBtn')?.addEventListener('click', async () => {
+    if (aboutEditMode) {
+      localMeta = localMeta || {...metaData};
+      // Save all bio sections (bioIntro removed, IDs shifted)
+      localMeta.bioWhoAmI = document.getElementById('bioSection0')?.value || localMeta.bioWhoAmI;
+      localMeta.bioSchool = document.getElementById('bioSection1')?.value || localMeta.bioSchool;
+      localMeta.bioTraining = document.getElementById('bioSection2')?.value || localMeta.bioTraining;
+      localMeta.bioWhy = document.getElementById('bioSection3')?.value || localMeta.bioWhy;
+      localMeta.bioCommunity = document.getElementById('bioSection4')?.value || localMeta.bioCommunity;
+      localMeta.bioImportant = document.getElementById('bioSection5')?.value || localMeta.bioImportant;
+      localMeta.founded = document.getElementById('foundedInput')?.value || localMeta.founded;
+      localMeta.region = document.getElementById('regionInput')?.value || localMeta.region;
+      
+      await updateDoc(doc(db, 'meta', 'nightwither'), { 
+        bioWhoAmI: localMeta.bioWhoAmI,
+        bioSchool: localMeta.bioSchool,
+        bioTraining: localMeta.bioTraining,
+        bioWhy: localMeta.bioWhy,
+        bioCommunity: localMeta.bioCommunity,
+        bioImportant: localMeta.bioImportant,
+        founded: localMeta.founded, 
+        region: localMeta.region 
+      });
+    }
+    aboutEditMode = !aboutEditMode;
+    updateView();
+  });
+
+  // Chat
+  document.getElementById('acceptRulesBtn')?.addEventListener('click', () => { showChatRules = false; updateView(); });
+  document.getElementById('showRulesBtn')?.addEventListener('click', () => { showChatRules = true; updateView(); });
+  
+  // Chat input - SIMPLE binding
+  const chatInputEl = document.getElementById('chatInput');
+  const chatSendBtn = document.getElementById('chatSendBtn');
+  
+  if (chatInputEl) {
+    // Set current value
+    chatInputEl.value = chatInput;
+    
+    // Input handler
+    chatInputEl.oninput = function(e) {
+      chatInput = e.target.value;
+    };
+    
+    // Enter key handler
+    chatInputEl.onkeydown = function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChat();
+      }
+    };
+  }
+  
+  if (chatSendBtn) {
+    chatSendBtn.onclick = sendChat;
+  }
+  
+  // Delete chat messages
+  document.querySelectorAll('[data-del-chat]').forEach(b => {
+    b.addEventListener('click', async () => await deleteDoc(doc(db, 'chat', b.dataset.delChat)));
+  });
+  
+  // Chat Ban/Unban
+  document.querySelectorAll('[data-ban-chat]').forEach(b => {
+    b.addEventListener('click', async () => {
+      const uid = b.dataset.banChat;
+      const user = communityUsers.find(u => u.uid === uid);
+      if (confirm(`${user?.displayName || 'User'} bannen?\n\nDer User kann nicht mehr chatten oder sich für Events registrieren.`)) {
+        await updateDoc(doc(db, 'users', uid), { isBanned: true });
+        alert('✅ User gebannt!');
+      }
+    });
+  });
+  
+  document.querySelectorAll('[data-unban-chat]').forEach(b => {
+    b.addEventListener('click', async () => {
+      const uid = b.dataset.unbanChat;
+      const user = communityUsers.find(u => u.uid === uid);
+      if (confirm(`${user?.displayName || 'User'} entbannen?`)) {
+        await updateDoc(doc(db, 'users', uid), { isBanned: false });
+        alert('✅ User entbannt!');
+      }
+    });
+  });
+  
+  // Auto scroll chat
+  const cm = document.getElementById('chatMessages');
+  if (cm) cm.scrollTop = cm.scrollHeight;
+  
+  // Tab Switching
+  document.querySelectorAll('[data-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTab = btn.dataset.tab;
+      updateView();
+    });
+  });
+  
+  // Voting (Ideas & Podcast)
+  document.querySelectorAll('[data-vote]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const msgId = btn.dataset.vote;
+      const collectionName = activeTab === 'ideas' ? 'ideas' : 'podcast';
+      const currentMessages = activeTab === 'ideas' ? ideasMessages : podcastMessages;
+      const msg = currentMessages.find(m => m.id === msgId);
+      
+      if (!msg) return;
+      
+      const userId = currentUser.uid;
+      const votedBy = msg.votedBy || [];
+      
+      // Check if user already voted
+      if (votedBy.includes(userId)) {
+        alert('Du hast bereits für diese Idee gevotet!');
+        return;
+      }
+      
+      // Add vote
+      await updateDoc(doc(db, collectionName, msgId), {
+        votes: (msg.votes || 0) + 1,
+        votedBy: [...votedBy, userId]
+      });
+    });
+  });
+  
+  // Delete messages (all tabs)
+  document.querySelectorAll('[data-del-msg]').forEach(b => {
+    b.addEventListener('click', async () => {
+      const collectionName = activeTab === 'chat' ? 'chat' : 
+                            activeTab === 'ideas' ? 'ideas' : 'podcast';
+      await deleteDoc(doc(db, collectionName, b.dataset.delMsg));
+    });
+  });
+
+  // Community
+  document.getElementById('communitySearch')?.addEventListener('input', e => { communitySearch = e.target.value; updateView(); });
+  document.querySelectorAll('.role-btn').forEach(b => {
+    b.addEventListener('click', async () => await updateDoc(doc(db, 'users', b.dataset.uid), { role: b.dataset.role }));
+  });
+  document.querySelectorAll('[data-del-user]').forEach(b => {
+    b.addEventListener('click', () => { confirmDeleteUid = b.dataset.delUser; updateView(); });
+  });
+  document.getElementById('cancelDel')?.addEventListener('click', () => { confirmDeleteUid = null; updateView(); });
+  document.querySelectorAll('[data-confirm-del]').forEach(b => {
+    b.addEventListener('click', async () => { await deleteDoc(doc(db, 'users', b.dataset.confirmDel)); confirmDeleteUid = null; updateView(); });
+  });
+  
+  // Ban/Unban Users
+  document.querySelectorAll('[data-ban-user]').forEach(b => {
+    b.addEventListener('click', async () => {
+      const uid = b.dataset.banUser;
+      const user = communityUsers.find(u => u.uid === uid);
+      if (confirm(`${user?.displayName || 'User'} wirklich bannen?\n\nGebannte User können nicht mehr chatten oder sich für Events registrieren.`)) {
+        await updateDoc(doc(db, 'users', uid), { isBanned: true });
+        alert('✅ User wurde gebannt!');
+      }
+    });
+  });
+  
+  document.querySelectorAll('[data-unban-user]').forEach(b => {
+    b.addEventListener('click', async () => {
+      const uid = b.dataset.unbanUser;
+      const user = communityUsers.find(u => u.uid === uid);
+      if (confirm(`${user?.displayName || 'User'} wirklich entbannen?`)) {
+        await updateDoc(doc(db, 'users', uid), { isBanned: false });
+        alert('✅ User wurde entbannt!');
+      }
+    });
+  });
+  
+  document.querySelectorAll('[data-unban-settings]').forEach(b => {
+    b.addEventListener('click', async () => {
+      const uid = b.dataset.unbanSettings;
+      const user = communityUsers.find(u => u.uid === uid);
+      if (confirm(`${user?.displayName || 'User'} wirklich entbannen?`)) {
+        await updateDoc(doc(db, 'users', uid), { isBanned: false });
+      }
+    });
+  });
+
+  // Profile
+  document.querySelectorAll('[data-edit-field]').forEach(b => {
+    b.addEventListener('click', () => { editingField = b.dataset.editField; fieldValue = b.dataset.val||''; updateView(); });
+  });
+  document.getElementById('saveFieldBtn')?.addEventListener('click', async () => {
+    const u = currentUser;
+    if (!u || !editingField) return;
+    const newVal = document.getElementById('fieldInput')?.value || '';
+    const updates = { [editingField]: newVal };
+    if (editingField === 'displayName') {
+      if ((u.displayNameChanges||0) >= 1) { alert('Name kann nur einmal geändert werden.'); editingField = null; updateView(); return; }
+      updates.displayNameChanges = 1;
+      currentUser = {...currentUser, displayName: newVal, displayNameChanges: 1};
+    } else {
+      currentUser = {...currentUser, [editingField]: newVal};
+    }
+    await updateDoc(doc(db, 'users', u.uid), updates);
+    // Sync socials to meta if Owner
+    if (isAdmin(u)) {
+      const fieldMap = {
+        linkedTwitch:'socials.twitch',linkedDiscord:'socials.discord',linkedTikTok:'socials.tiktok',
+        linkedYouTube:'socials.youtube',linkedInstagram:'socials.instagram',linkedKick:'socials.kick',
+        linkedSpotify:'socials.spotify',followersTwitch:'socials.followers.twitch',
+        followersDiscord:'socials.followers.discord',followersTikTok:'socials.followers.tiktok',
+        followersYouTube:'socials.followers.youtube',followersInstagram:'socials.followers.instagram',
+        followersKick:'socials.followers.kick',followersSpotify:'socials.followers.spotify'
+      };
+      if (fieldMap[editingField]) await updateDoc(doc(db, 'meta', 'nightwither'), { [fieldMap[editingField]]: newVal });
+    }
+    editingField = null; updateView();
+  });
+  document.getElementById('cancelFieldBtn')?.addEventListener('click', () => { editingField = null; updateView(); });
+
+  // Settings
+  document.getElementById('logoutSettingsBtn')?.addEventListener('click', handleLogout);
+  document.getElementById('startDeleteBtn')?.addEventListener('click', () => { showDeleteConfirm = true; updateView(); });
+  document.getElementById('cancelDeleteBtn')?.addEventListener('click', () => { showDeleteConfirm = false; updateView(); });
+  document.getElementById('confirmDeleteBtn')?.addEventListener('click', handleDeleteAccount);
+  
+  // Chat Filter Settings
+  document.getElementById('toggleWordFilterBtn')?.addEventListener('click', () => { 
+    chatFilterEnabled = !chatFilterEnabled; 
+    updateView(); 
+  });
+  document.getElementById('toggleLinkFilterBtn')?.addEventListener('click', () => { 
+    linkFilterEnabled = !linkFilterEnabled; 
+    updateView(); 
+  });
+  document.getElementById('addWordBtn')?.addEventListener('click', () => {
+    const word = prompt('Wort zur Blacklist hinzufügen:');
+    if (word && word.trim()) {
+      const cleanWord = word.trim().toLowerCase();
+      const firstLetter = cleanWord.charAt(0).toUpperCase();
+      
+      // Add to appropriate category or create new one
+      if (chatFilterWords[firstLetter]) {
+        if (!chatFilterWords[firstLetter].includes(cleanWord)) {
+          chatFilterWords[firstLetter].push(cleanWord);
+          chatFilterWords[firstLetter].sort(); // Keep alphabetical
+        }
+      } else {
+        chatFilterWords[firstLetter] = [cleanWord];
+      }
+      
+      // Update flat list
+      chatFilterWordsList = [];
+      Object.values(chatFilterWords).forEach(category => {
+        chatFilterWordsList = chatFilterWordsList.concat(category);
+      });
+      
+      updateView();
+    }
+  });
+  
+  document.querySelectorAll('[data-remove-word-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const category = btn.dataset.removeWordCat;
+      const idx = parseInt(btn.dataset.removeWordIdx);
+      
+      if (chatFilterWords[category] && chatFilterWords[category][idx]) {
+        const word = chatFilterWords[category][idx];
+        if (confirm(`"${word}" aus Blacklist entfernen?`)) {
+          chatFilterWords[category].splice(idx, 1);
+          
+          // Remove empty categories
+          if (chatFilterWords[category].length === 0) {
+            delete chatFilterWords[category];
+          }
+          
+          // Update flat list
+          chatFilterWordsList = [];
+          Object.values(chatFilterWords).forEach(cat => {
+            chatFilterWordsList = chatFilterWordsList.concat(cat);
+          });
+          
+          updateView();
+        }
+      }
+    });
+  });
+  
+  document.getElementById('clearChatBtn')?.addEventListener('click', async () => {
+    if (!confirm('⚠️ Chat wirklich leeren?\n\nAlle Nachrichten werden unwiderruflich gelöscht!')) return;
+    const snapshot = await getDocs(collection(db, 'chat'));
+    const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(deletePromises);
+    await Promise.all(deletePromises);
+    alert('✅ Chat wurde geleert!');
+  });
+  
+  // FAQ Edit Mode
+  document.getElementById('editFAQBtn')?.addEventListener('click', () => {
+    faqEditMode = true;
+    localFAQ = JSON.parse(JSON.stringify(metaData?.faq || {}));
+    updateView();
+  });
+  
+  document.getElementById('cancelFAQBtn')?.addEventListener('click', () => {
+    faqEditMode = false;
+    localFAQ = {};
+    updateView();
+  });
+  
+  document.getElementById('saveFAQBtn')?.addEventListener('click', async () => {
+    // Collect all FAQ values from textareas
+    document.querySelectorAll('[data-faq-key]').forEach(textarea => {
+      const key = textarea.dataset.faqKey;
+      localFAQ[key] = textarea.value;
+    });
+    
+    // Save to Firebase
+    await updateDoc(doc(db, 'meta', 'nightwither'), { faq: localFAQ });
+    faqEditMode = false;
+    localFAQ = {};
+    updateView();
+  });
+}
+
+// ─── Chat send ─────────────────────────────────────────────────
+async function sendChat() {
+  const u = currentUser;
+  const msg = document.getElementById('chatInput')?.value?.trim() || chatInput.trim();
+  if (!msg) return;
+  
+  // Check if user is banned
+  if (u.isBanned) {
+    alert('🚫 Du wurdest gebannt und kannst keine Nachrichten mehr senden.');
+    return;
+  }
+  
+  // Rate Limiting: Max 6 messages in 12 seconds (not for Owner/Mod)
+  if (u.role !== 'Owner' && u.role !== 'Moderator') {
+    if (!canSendMessage()) {
+      alert('⏱️ Slow down! Max 6 Nachrichten in 12 Sekunden.');
+      return;
+    }
+    
+    // Duplicate Detection: Same message in 12 seconds
+    if (isDuplicateMessage(msg)) {
+      alert('💜 Einmal reicht zum Lesen');
+      return;
+    }
+  }
+  
+  // Determine collection based on active tab
+  const collectionName = activeTab === 'chat' ? 'chat' : 
+                        activeTab === 'ideas' ? 'ideas' : 'podcast';
+  
+  // Link Detection (only for chat tab, for non-Mod/Owner users)
+  if (activeTab === 'chat') {
+    const linkRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)|([a-zA-Z0-9-]+\.(com|de|net|org|io|tv|gg)[^\s]*)/gi;
+    const hasLink = linkRegex.test(msg);
+    
+    // Check if user is allowed to post links
+    const canPostLinks = u.role === 'Owner' || u.role === 'Moderator';
+    
+    if (linkFilterEnabled && hasLink && !canPostLinks) {
+      alert('❌ Bitte keine Eigenwerbung.');
+      return; // Block the message
+    }
+  }
+  
+  // Advanced Word Filter with Regex (only for chat tab)
+  let filtered = msg;
+  if (activeTab === 'chat' && chatFilterEnabled) {
+    chatFilterWordsList.forEach(word => {
+      const pattern = createFilterPattern(word);
+      filtered = filtered.replace(pattern, (match) => '*'.repeat(match.length));
+    });
+  }
+  
+  // Send message
+  chatInput = '';
+  if (document.getElementById('chatInput')) document.getElementById('chatInput').value = '';
+  
+  // Add message to appropriate collection
+  const messageData = {
+    userId: u.uid, 
+    userName: u.displayName, 
+    userRole: u.role,
+    text: filtered, 
+    timestamp: serverTimestamp(), 
+    channel: 'public'
+  };
+  
+  // Add votes field for ideas and podcast
+  if (activeTab !== 'chat') {
+    messageData.votes = 0;
+    messageData.votedBy = [];
+  }
+  
+  await addDoc(collection(db, collectionName), messageData);
+}
+
+// ─── Auth actions ──────────────────────────────────────────────
+async function handleLogout() {
+  if (currentUser?.role === 'Guest') { cleanup(); currentUser = null; render(); return; }
+  await signOut(auth);
+}
+async function handleDeleteAccount() {
+  const firebaseUser = auth.currentUser;
+  if (!firebaseUser) { if (currentUser?.role === 'Guest') { cleanup(); currentUser = null; render(); } return; }
+  isDeleting = true; updateView();
+  try {
+    try { await deleteDoc(doc(db, 'users', firebaseUser.uid)); } catch {}
+    await deleteUser(firebaseUser);
+    cleanup(); currentUser = null; render();
+  } catch(e) {
+    if (e.code === 'auth/requires-recent-login') { alert('Bitte neu einloggen, dann Konto löschen.'); signOut(auth); }
+    else alert('Fehler beim Löschen. Bitte erneut versuchen.');
+  }
+  isDeleting = false;
+}
+
+// ─── Joke ──────────────────────────────────────────────────────
+function triggerJoke() {
+  const msg = JOKE_MESSAGES[Math.floor(Math.random()*JOKE_MESSAGES.length)];
+  const el = document.getElementById('jokeOverlay');
+  const txt = document.getElementById('jokeText');
+  if (!el||!txt) return;
+  txt.textContent = msg;
+  el.classList.remove('hidden'); el.classList.add('flex');
+  if (jokeTimeout) clearTimeout(jokeTimeout);
+  jokeTimeout = setTimeout(() => { el.classList.add('hidden'); el.classList.remove('flex'); }, 3000);
+}
+
+// ─── Cleanup ───────────────────────────────────────────────────
+function cleanup() {
+  unsubscribers.forEach(u => u());
+  unsubscribers = [];
+}
+
+// ─── Realtime Listeners ────────────────────────────────────────
+function startListeners() {
+  cleanup();
+  // Meta
+  unsubscribers.push(onSnapshot(doc(db, 'meta', 'nightwither'), snap => {
+    if (snap.exists()) { metaData = snap.data(); isLive = !!metaData.isLive; }
+    else {
+      metaData = { bio:'Willkommen im Herz der NightWitherUnity...', founded:'2023', region:'Nocturnal Sector', schedule:DEFAULT_SCHEDULE, nextStream:'Montag @ 19:00 Uhr', isLive:false, socials:{twitch:'nightwither',discord:'nightwither',tiktok:'nightwither',youtube:'nightwither',instagram:'nightwither',spotify:'nightwither',kick:'nightwither',followers:{twitch:'0',tiktok:'0',youtube:'0',discord:'0',instagram:'0',spotify:'0',kick:'0'}} };
+      if (currentUser && isAdmin(currentUser)) setDoc(doc(db,'meta','nightwither'), metaData).catch(()=>{});
+    }
+    if (['home','schedule','events','about'].includes(activeView)) updateView();
+    // update live status indicator in header
+    const dot = document.querySelector('.pulse-dot');
+    if (dot) dot.className = `w-1 h-1 rounded-full pulse-dot ${isLive?'bg-red-500':'bg-green-400'}`;
+  }));
+  // Announcements
+  unsubscribers.push(onSnapshot(query(collection(db,'announcements'),orderBy('createdAt','desc')), snap => {
+    announcements = snap.docs.map(d => ({id:d.id,...d.data()}));
+    if (activeView==='events') updateView();
+  }));
+  // Events
+  unsubscribers.push(onSnapshot(query(collection(db,'events'),orderBy('startTime','desc')), snap => {
+    events = snap.docs.map(d => ({id:d.id,...d.data()}));
+    if (activeView==='events') updateView();
+  }));
+  // Chat
+  unsubscribers.push(onSnapshot(query(collection(db,'chat'),orderBy('timestamp','desc'),limit(50)), snap => {
+    chatMessages = snap.docs.map(d => ({id:d.id,...d.data()})).reverse();
+    if (activeView==='chat') {
+      const cm = document.getElementById('chatMessages');
+      if (cm) { cm.innerHTML = renderChat().match(/id="chatMessages"[^>]*>([\s\S]*?)<\/div>\s*<div class="p-4/)?.[1]||''; cm.scrollTop = cm.scrollHeight; }
+      updateView();
+    }
+  }));
+  
+  // Ideas
+  unsubscribers.push(onSnapshot(query(collection(db,'ideas'),orderBy('timestamp','desc'),limit(50)), snap => {
+    ideasMessages = snap.docs.map(d => ({id:d.id,...d.data()})).sort((a,b) => (b.votes||0) - (a.votes||0));
+    if (activeView==='chat' && activeTab==='ideas') updateView();
+  }));
+  
+  // Podcast
+  unsubscribers.push(onSnapshot(query(collection(db,'podcast'),orderBy('timestamp','desc'),limit(50)), snap => {
+    podcastMessages = snap.docs.map(d => ({id:d.id,...d.data()})).sort((a,b) => (b.votes||0) - (a.votes||0));
+    if (activeView==='chat' && activeTab==='podcast') updateView();
+  }));
+  
+  // Community users (only for admins)
+  if (currentUser && isAdmin(currentUser)) {
+    unsubscribers.push(onSnapshot(query(collection(db,'users'),orderBy('displayName','asc')), snap => {
+      communityUsers = snap.docs.map(d => ({uid:d.id,...d.data()}));
+      if (activeView==='community') updateView();
+    }));
+  }
+}
+
+// ─── Auth State ────────────────────────────────────────────────
+onAuthStateChanged(auth, async firebaseUser => {
+  cleanup();
+  if (firebaseUser) {
+    const userRef = doc(db, 'users', firebaseUser.uid);
+    unsubscribers.push(onSnapshot(userRef, async snap => {
+      if (snap.exists()) {
+        const data = snap.data();
+        const isAdm = firebaseUser.email?.toLowerCase() === 'nwu.brand@gmail.com';
+        const updates = {};
+        if (!data.email || data.email !== firebaseUser.email) updates.email = firebaseUser.email||'';
+        if (isAdm && data.role !== 'Owner') updates.role = 'Owner';
+        if (Object.keys(updates).length > 0) await updateDoc(userRef, updates);
+        currentUser = {...data,...updates, email: firebaseUser.email||data.email||''};
+      } else {
+        const isAdm = firebaseUser.email?.toLowerCase() === 'nwu.brand@gmail.com';
+        const newUser = { uid:firebaseUser.uid, email:firebaseUser.email||'', displayName:firebaseUser.displayName||(isAdm?'Admin':'User_'+firebaseUser.uid.slice(0,5)), photoURL:firebaseUser.photoURL||'', role:isAdm?'Owner':'User', loyaltyPoints:0, hoursWatched:0, displayNameChanges:0 };
+        await setDoc(userRef, newUser);
+        currentUser = newUser;
+      }
+      startListeners();
+      render();
+    }));
+  } else {
+    if (!currentUser || currentUser.role !== 'Guest') {
+      currentUser = null;
+      render();
+    }
+  }
+});
+
+// Init
+document.getElementById('app').innerHTML = `<div class="flex items-center justify-center h-screen bg-black"><div class="spin text-brand-purple">${icons.activity.replace('20','48').replace('20','48')}</div></div>`;
+</script>
+
+<div id="app"></div>
+</body>
+</html>
