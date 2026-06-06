@@ -536,7 +536,8 @@ function renderMain() {
         ${navItem('home','share2','Netzwerke')}
         ${navItem('schedule','calendar','Plan')}
         ${navItem('chat','message','Chat')}
-        ${!gst ? navItem('events','trophy','Events') + navItem('about','usercircle','Biografie') : ''}
+        ${navItem('events','trophy','Events')}
+        ${navItem('about','usercircle','Biografie')}
         ${adm ? navItem('community','usercog','Community') : ''}
       </div>
       <div class="flex flex-col gap-4 mt-auto">
@@ -552,9 +553,9 @@ function renderMain() {
       <button data-nav="home" class="p-3 rounded-xl nav-mob transition-all ${activeView==='home'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.share2}</button>
       <button data-nav="schedule" class="p-3 rounded-xl nav-mob transition-all ${activeView==='schedule'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.calendar}</button>
       <button data-nav="chat" class="p-3 rounded-xl nav-mob transition-all ${activeView==='chat'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.message}</button>
-      ${!gst ? `<button data-nav="events" class="p-3 rounded-xl nav-mob transition-all ${activeView==='events'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.trophy}</button>
+      <button data-nav="events" class="p-3 rounded-xl nav-mob transition-all ${activeView==='events'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.trophy}</button>
       <button data-nav="about" class="p-3 rounded-xl nav-mob transition-all ${activeView==='about'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.usercircle}</button>
-      <button data-nav="profile" class="p-3 rounded-xl nav-mob transition-all ${activeView==='profile'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.user}</button>
+      ${!gst ? `<button data-nav="profile" class="p-3 rounded-xl nav-mob transition-all ${activeView==='profile'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.user}</button>
       <button data-nav="faq" class="p-3 rounded-xl nav-mob transition-all ${activeView==='faq'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.helpCircle}</button>` : ''}
       ${adm ? `<button data-nav="community" class="p-3 rounded-xl nav-mob transition-all ${activeView==='community'?'bg-brand-purple text-white shadow-lg':'text-white/40'}">${icons.usercog}</button>` : ''}
     </nav>
@@ -1840,7 +1841,13 @@ function bindViewEvents() {
     b.addEventListener('click', async () => await deleteDoc(doc(db, 'announcements', b.dataset.delAnn)));
   });
   document.querySelectorAll('[data-reg-event]').forEach(b => {
-    b.addEventListener('click', () => { registeringEvent = events.find(e => e.id === b.dataset.regEvent); updateView(); });
+    b.addEventListener('click', () => {
+      if (isGuest(currentUser)) {
+        toast('🕯️ Registriere dich, um an Events teilzunehmen.');
+        return;
+      }
+      registeringEvent = events.find(e => e.id === b.dataset.regEvent); updateView();
+    });
   });
   document.getElementById('closeRegBtn')?.addEventListener('click', () => { registeringEvent = null; updateView(); });
   document.getElementById('regBg')?.addEventListener('click', () => { registeringEvent = null; updateView(); });
